@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router";
 import { Home } from "./pages/home";
 import { Chat } from "./pages/chat";
+import "./styles.css";
 
 export const App = () => {
   return (
