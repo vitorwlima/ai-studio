@@ -1,13 +1,14 @@
-import { useQuery } from "convex/react";
-import { api } from "@convex/api";
+import { BrowserRouter, Routes, Route } from "react-router";
+import { Home } from "./pages/home";
+import { Chat } from "./pages/chat";
 
 export const App = () => {
-  const chats = useQuery(api.chats.getChats, { userId: "" });
-
   return (
-    <div>
-      <h1>AI Studio</h1>
-      <pre>{JSON.stringify(chats, null, 2)}</pre>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/chat/:chatId" element={<Chat />} />
+      </Routes>
+    </BrowserRouter>
   );
 };
