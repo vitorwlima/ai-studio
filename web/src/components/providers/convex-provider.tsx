@@ -1,12 +1,13 @@
-import {
-  ConvexProvider as ConvexProviderFromLib,
-  ConvexReactClient,
-} from "convex/react";
+import { ConvexReactClient } from "convex/react";
+import { ConvexProviderWithClerk } from "convex/react-clerk";
+import { useAuth } from "@clerk/clerk-react";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 
 export const ConvexProvider = ({ children }: { children: React.ReactNode }) => {
   return (
-    <ConvexProviderFromLib client={convex}>{children}</ConvexProviderFromLib>
+    <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+      {children}
+    </ConvexProviderWithClerk>
   );
 };

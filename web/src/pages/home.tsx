@@ -2,7 +2,7 @@ import { useQuery } from "convex/react";
 import { api } from "@convex/api";
 
 export const Home = () => {
-  const chats = useQuery(api.chats.getChats, { userId: "" });
+  const chats = useQuery(api.chats.getChats);
 
   return (
     <div>
