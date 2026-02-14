@@ -16,6 +16,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
+      'src': path.resolve(__dirname, 'src'),
       '@convex': path.resolve(__dirname, '../convex/convex/_generated'),
       'convex': path.resolve(__dirname, 'node_modules/convex'),
     },

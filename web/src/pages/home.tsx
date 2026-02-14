@@ -1,13 +1,9 @@
-import { useQuery } from "convex/react";
-import { api } from "@convex/api";
+import { ChatSidebar } from "src/components/common/chat-sidebar";
 
 export const Home = () => {
-  const chats = useQuery(api.chats.getChats);
-
   return (
-    <div>
-      <h1>AI Studio</h1>
-      <pre>{JSON.stringify(chats, null, 2)}</pre>
-    </div>
+    <main className="h-screen flex p-4">
+      <ChatSidebar />
+    </main>
   );
 };
