@@ -1,4 +1,9 @@
 @import "tailwindcss";
+@import "@fontsource-variable/montserrat";
+
+@theme {
+  --font-sans: "Montserrat Variable", sans-serif;
+}
 
 body {
   @apply bg-zinc-100 text-zinc-900;
