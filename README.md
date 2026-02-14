@@ -8,7 +8,7 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 - [x] install tailwind
 - [x] add clerk auth on fe (locked pages + sign in/up)
 - [x] add clerk auth on convex be
-- [ ] add basic ui with sidebar
+- [x] add basic ui with sidebar
 - [ ] add chat container (use hardcoded openrouter key for now)
 - [ ] add better eslint/prettier and tailwind prettier plugin for classnames ordering
 - [ ] add user/settings button at the end of the sidebar (or top right of the screen?)
