@@ -10,10 +10,34 @@ export const list = query({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) return { page: [], isDone: true, continueCursor: "" };
 
-    return await ctx.runQuery(components.agent.threads.listThreadsByUserId, {
-      userId: identity.subject,
-      order: "desc",
-    });
+    const result = await ctx.runQuery(
+      components.agent.threads.listThreadsByUserId,
+      {
+        userId: identity.subject,
+        order: "desc",
+      }
+    );
+
+    const threadsWithMeta = await Promise.all(
+      result.page.map(async (thread) => {
+        const meta = await ctx.db
+          .query("threadMetadata")
+          .withIndex("by_threadId", (q) => q.eq("threadId", thread._id))
+          .unique();
+
+        return {
+          ...thread,
+          updatedAt: meta?.updatedAt ?? thread._creationTime,
+        };
+      })
+    );
+
+    threadsWithMeta.sort((a, b) => b.updatedAt - a.updatedAt);
+
+    return {
+      ...result,
+      page: threadsWithMeta,
+    };
   },
 });
 
@@ -35,11 +59,7 @@ export const listThreadMessages = query({
     }
 
     const listMessages = await listUIMessages(ctx, components.agent, args);
-    const streams = await syncStreams(
-      ctx,
-      components.agent,
-      args
-    );
+    const streams = await syncStreams(ctx, components.agent, args);
 
     return {
       ...listMessages,

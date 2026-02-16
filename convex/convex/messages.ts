@@ -3,7 +3,11 @@ import {
   saveMessage,
   updateThreadMetadata,
 } from "@convex-dev/agent";
-import { internalAction, mutation } from "./_generated/server";
+import {
+  internalAction,
+  internalMutation,
+  mutation,
+} from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { components } from "./_generated/api";
@@ -37,6 +41,20 @@ export const sendMessage = mutation({
       promptMessageId: messageId,
     });
 
+    const existingMeta = await ctx.db
+      .query("threadMetadata")
+      .withIndex("by_threadId", (q) => q.eq("threadId", threadId))
+      .unique();
+
+    if (existingMeta) {
+      await ctx.db.patch(existingMeta._id, { updatedAt: Date.now() });
+    } else {
+      await ctx.db.insert("threadMetadata", {
+        threadId,
+        updatedAt: Date.now(),
+      });
+    }
+
     if (isNewThread) {
       await ctx.scheduler.runAfter(0, internal.messages.generateTitle, {
         threadId,
@@ -63,6 +81,10 @@ export const generateResponse = internalAction({
     );
 
     await result.consumeStream();
+
+    await ctx.runMutation(internal.messages.touchThread, {
+      threadId,
+    });
   },
 });
 
@@ -73,9 +95,12 @@ export const generateTitle = internalAction({
   },
   handler: async (ctx, { threadId, prompt }) => {
     const { text } = await generateText({
-      model: aiStudioOpenRouter.chat("google/gemini-2.5-flash-lite-preview-09-2025", {
-        reasoning: { enabled: false, effort: "low" },
-      }),
+      model: aiStudioOpenRouter.chat(
+        "google/gemini-2.5-flash-lite-preview-09-2025",
+        {
+          reasoning: { enabled: false, effort: "low" },
+        }
+      ),
       system:
         "Generate a short, concise title (max 6 words) for a chat conversation based on the user's first message. Reply with only the title, no quotes or punctuation.",
       prompt,
@@ -85,5 +110,24 @@ export const generateTitle = internalAction({
       threadId,
       patch: { title: text.trim() },
     });
+  },
+});
+
+export const touchThread = internalMutation({
+  args: { threadId: v.string() },
+  handler: async (ctx, { threadId }) => {
+    const existing = await ctx.db
+      .query("threadMetadata")
+      .withIndex("by_threadId", (q) => q.eq("threadId", threadId))
+      .unique();
+
+    if (existing) {
+      await ctx.db.patch(existing._id, { updatedAt: Date.now() });
+    } else {
+      await ctx.db.insert("threadMetadata", {
+        threadId,
+        updatedAt: Date.now(),
+      });
+    }
   },
 });

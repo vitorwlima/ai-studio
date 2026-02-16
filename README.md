@@ -10,7 +10,7 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 - [x] add clerk auth on convex be
 - [x] add basic ui with sidebar
 - [x] add chat container (use hardcoded openrouter key for now)
-- [ ] sort thread by date in the list (if animated would be cool)
+- [x] sort thread by date in the list (if animated would be cool)
 - [ ] add better eslint/prettier and tailwind prettier plugin for classnames ordering
 - [ ] add user/settings button at the end of the sidebar (or top right of the screen?)
 - [ ] make sidebar collapsible
