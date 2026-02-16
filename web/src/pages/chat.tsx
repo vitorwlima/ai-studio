@@ -8,7 +8,7 @@ export const Chat = () => {
   return (
     <main className="h-screen flex p-4 gap-4">
       <ChatSidebar />
-      <ChatContainer threadId={threadId} />
+      <ChatContainer key={threadId ?? "new"} threadId={threadId} />
     </main>
   );
 };
