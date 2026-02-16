@@ -13,7 +13,7 @@ export const App = () => {
         <Route path="/sign-up" element={<SignUp />} />
         <Route element={<AuthLayout />}>
           <Route path="/" element={<Chat />} />
-          <Route path="/chat/:chatId" element={<Chat />} />
+          <Route path="/chat/:threadId" element={<Chat />} />
         </Route>
       </Routes>
     </BrowserRouter>

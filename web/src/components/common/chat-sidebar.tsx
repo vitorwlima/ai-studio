@@ -4,7 +4,7 @@ import { LucidePanelRightOpen, LucideSquarePen } from "lucide-react";
 import { Link } from "react-router";
 
 export const ChatSidebar = () => {
-  const chats = useQuery(api.chats.getChats) ?? [];
+  const threads = useQuery(api.threads.list);
 
   return (
     <div className="h-full flex flex-col gap-2 w-64">
@@ -26,13 +26,13 @@ export const ChatSidebar = () => {
       <div className="flex flex-col gap-2 border border-zinc-300 rounded-xl p-2 w-full h-full">
         <div className="font-medium text-sm">My Chats</div>
         <div className="flex flex-col gap-1 overflow-y-auto">
-          {chats.map((chat) => (
+          {threads?.page.map((thread) => (
             <Link
-              key={chat._id}
-              to={`/chat/${chat.generatedChatId}`}
+              key={thread._id}
+              to={`/chat/${thread._id}`}
               className="font-medium text-sm p-2 rounded-xl"
             >
-              {chat.title}
+              {thread.title || "New Chat"}
             </Link>
           ))}
         </div>
