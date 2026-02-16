@@ -1,35 +1,50 @@
-import { createThread, saveMessage } from "@convex-dev/agent";
+import {
+  createThread,
+  saveMessage,
+  updateThreadMetadata,
+} from "@convex-dev/agent";
 import { internalAction, mutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { components } from "./_generated/api";
 import { agent } from "./lib/agent";
+import { generateText } from "ai";
+import { aiStudioOpenRouter } from "./lib/openrouter";
 
 export const sendMessage = mutation({
   args: { prompt: v.string(), threadId: v.optional(v.string()) },
-  handler: async (ctx, { prompt, threadId }) => {
+  handler: async (ctx, { prompt, ...args }) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
       throw new Error("Unauthorized");
     }
 
     const userId = identity.subject;
-    const threadIdToUse =
-      threadId ?? (await createThread(ctx, components.agent, { userId }));
+    const isNewThread = !args.threadId;
+    const threadId = isNewThread
+      ? await createThread(ctx, components.agent, { userId })
+      : args.threadId!;
 
     const { messageId } = await saveMessage(ctx, components.agent, {
-      threadId: threadIdToUse,
+      threadId,
       userId,
       prompt,
     });
 
     await ctx.scheduler.runAfter(0, internal.messages.generateResponse, {
-      threadId: threadIdToUse,
+      threadId,
       userId,
       promptMessageId: messageId,
     });
 
-    return { threadId: threadIdToUse };
+    if (isNewThread) {
+      await ctx.scheduler.runAfter(0, internal.messages.generateTitle, {
+        threadId,
+        prompt,
+      });
+    }
+
+    return { threadId };
   },
 });
 
@@ -48,5 +63,27 @@ export const generateResponse = internalAction({
     );
 
     await result.consumeStream();
+  },
+});
+
+export const generateTitle = internalAction({
+  args: {
+    threadId: v.string(),
+    prompt: v.string(),
+  },
+  handler: async (ctx, { threadId, prompt }) => {
+    const { text } = await generateText({
+      model: aiStudioOpenRouter.chat("google/gemini-2.5-flash-lite-preview-09-2025", {
+        reasoning: { enabled: false, effort: "low" },
+      }),
+      system:
+        "Generate a short, concise title (max 6 words) for a chat conversation based on the user's first message. Reply with only the title, no quotes or punctuation.",
+      prompt,
+    });
+
+    await updateThreadMetadata(ctx, components.agent, {
+      threadId,
+      patch: { title: text.trim() },
+    });
   },
 });
