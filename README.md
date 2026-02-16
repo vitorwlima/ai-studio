@@ -13,6 +13,7 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 - [ ] add better eslint/prettier and tailwind prettier plugin for classnames ordering
 - [ ] add user/settings button at the end of the sidebar (or top right of the screen?)
 - [ ] make sidebar collapsible
+- [ ] try out the smoothText from convex: https://docs.convex.dev/agents/streaming#text-smoothing-with-smoothtext-and-usesmoothtext
 
 - [ ] set up proper monorepo to fix convex workarounds. should allow for mobile app and desktop app to reuse the same backend easily.
 - [ ] update convex agent and ai sdk to v6 when the version is available
