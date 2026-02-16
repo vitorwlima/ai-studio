@@ -18,7 +18,7 @@ export const ChatContainer: React.FC<Props> = ({ threadId }) => {
   const messagesResult = useUIMessages(
     api.threads.listThreadMessages,
     threadId ? { threadId } : "skip",
-    { initialNumItems: 10, stream: true }
+    { initialNumItems: 9999, stream: true }
   );
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
