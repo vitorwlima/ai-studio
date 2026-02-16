@@ -3,6 +3,7 @@ import { useQuery } from "convex/react";
 import { LucidePanelRightOpen, LucideSquarePen } from "lucide-react";
 import { Link, useParams } from "react-router";
 import { cn } from "src/lib/utils";
+import { ThreadPrefetcher } from "./thread-prefetcher";
 
 export const ChatSidebar = () => {
   const threads = useQuery(api.threads.list);
@@ -10,6 +11,8 @@ export const ChatSidebar = () => {
 
   return (
     <div className="h-full flex flex-col gap-2 w-64">
+      <ThreadPrefetcher />
+
       <div className="flex items-center justify-between border border-zinc-300 rounded-xl p-2 w-full">
         <div className="flex items-center gap-0.5">
           <img src="/logo.svg" alt="AI Studio logo" className="size-6" />
