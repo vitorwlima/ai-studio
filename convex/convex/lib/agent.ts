@@ -1,12 +1,11 @@
 import { components } from "../_generated/api";
 import { Agent } from "@convex-dev/agent";
-import { aiStudioOpenRouter } from "./openrouter";
+import { LanguageModel } from "ai";
 
-export const agent = new Agent(components.agent, {
-  name: "Chat agent",
-  languageModel: aiStudioOpenRouter.chat("openai/gpt-oss-120b", {
-    reasoning: { effort: "low" },
-  }),
-  instructions: "",
-  maxSteps: 1,
-});
+export const buildUserAgent = (languageModel: LanguageModel) =>
+  new Agent(components.agent, {
+    name: "Chat agent",
+    languageModel,
+    instructions: "",
+    maxSteps: 1,
+  });

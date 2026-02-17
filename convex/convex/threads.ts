@@ -2,7 +2,12 @@ import { v } from "convex/values";
 import { query } from "./_generated/server";
 import { components } from "./_generated/api";
 import { paginationOptsValidator } from "convex/server";
-import { listUIMessages, syncStreams, vStreamArgs } from "@convex-dev/agent";
+import {
+  listMessages,
+  syncStreams,
+  toUIMessages,
+  vStreamArgs,
+} from "@convex-dev/agent";
 
 export const list = query({
   args: {},
@@ -58,12 +63,55 @@ export const listThreadMessages = query({
       };
     }
 
-    const listMessages = await listUIMessages(ctx, components.agent, args);
+    const thread = await ctx.runQuery(components.agent.threads.getThread, {
+      threadId: args.threadId,
+    });
+
+    if (!thread || thread.userId !== identity.subject) {
+      return {
+        page: [],
+        isDone: true,
+        continueCursor: "",
+        streams: undefined,
+      };
+    }
+
+    const listedMessages = await listMessages(ctx, components.agent, args);
+    const modelCodeByMessageId = new Map(
+      listedMessages.page.map((message) => [message._id, message.model])
+    );
+    const uiMessages = toUIMessages(listedMessages.page).map((message) => ({
+      ...message,
+      modelCode: modelCodeByMessageId.get(message.id),
+    }));
     const streams = await syncStreams(ctx, components.agent, args);
 
     return {
-      ...listMessages,
+      ...listedMessages,
+      page: uiMessages,
       streams,
     };
+  },
+});
+
+export const getThreadLastModelCode = query({
+  args: { threadId: v.string() },
+  handler: async (ctx, { threadId }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
+
+    const thread = await ctx.runQuery(components.agent.threads.getThread, {
+      threadId,
+    });
+    if (!thread || thread.userId !== identity.subject) {
+      return null;
+    }
+
+    const meta = await ctx.db
+      .query("threadMetadata")
+      .withIndex("by_threadId", (q) => q.eq("threadId", threadId))
+      .unique();
+
+    return meta?.lastModelCode ?? null;
   },
 });

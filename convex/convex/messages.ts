@@ -11,14 +11,18 @@ import {
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { components } from "./_generated/api";
-import { agent } from "./lib/agent";
+import { buildUserAgent } from "./lib/agent";
 import { generateText } from "ai";
 import { aiStudioOpenRouter, createUserOpenRouter } from "./lib/openrouter";
 import { decrypt } from "./lib/crypto";
 
 export const sendMessage = mutation({
-  args: { prompt: v.string(), threadId: v.optional(v.string()) },
-  handler: async (ctx, { prompt, ...args }) => {
+  args: {
+    prompt: v.string(),
+    threadId: v.optional(v.string()),
+    modelCode: v.string(),
+  },
+  handler: async (ctx, { prompt, modelCode, ...args }) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
       throw new Error("Unauthorized");
@@ -34,12 +38,17 @@ export const sendMessage = mutation({
       threadId,
       userId,
       prompt,
+      metadata: {
+        model: modelCode,
+        provider: "openrouter",
+      },
     });
 
     await ctx.scheduler.runAfter(0, internal.messages.generateResponse, {
       threadId,
       userId,
       promptMessageId: messageId,
+      modelCode,
     });
 
     const existingMeta = await ctx.db
@@ -48,11 +57,15 @@ export const sendMessage = mutation({
       .unique();
 
     if (existingMeta) {
-      await ctx.db.patch(existingMeta._id, { updatedAt: Date.now() });
+      await ctx.db.patch(existingMeta._id, {
+        updatedAt: Date.now(),
+        lastModelCode: modelCode,
+      });
     } else {
       await ctx.db.insert("threadMetadata", {
         threadId,
         updatedAt: Date.now(),
+        lastModelCode: modelCode,
       });
     }
 
@@ -72,17 +85,23 @@ export const generateResponse = internalAction({
     threadId: v.string(),
     userId: v.string(),
     promptMessageId: v.string(),
+    modelCode: v.string(),
   },
-  handler: async (ctx, { threadId, userId, promptMessageId }) => {
-    const settings = await ctx.runQuery(
-      internal.settings.getUserSettings,
-      { userId }
-    );
+  handler: async (ctx, { threadId, userId, promptMessageId, modelCode }) => {
+    const settings = await ctx.runQuery(internal.settings.getUserSettings, {
+      userId,
+    });
+    if (!settings?.encryptedOpenRouterKey) {
+      throw new Error("No user OpenRouter key configured.");
+    }
 
-    const modelOverride = settings?.encryptedOpenRouterKey
-      ? createUserOpenRouter(await decrypt(settings.encryptedOpenRouterKey))
-          .chat("openai/gpt-oss-120b", { reasoning: { effort: "low" } })
-      : undefined;
+    const userOpenRouterKey = await decrypt(settings.encryptedOpenRouterKey);
+
+    const model = createUserOpenRouter(userOpenRouterKey).chat(modelCode, {
+      reasoning: { effort: "low" },
+    });
+
+    const agent = buildUserAgent(model);
 
     const result = await agent.streamText(
       ctx,
@@ -90,7 +109,6 @@ export const generateResponse = internalAction({
       { promptMessageId },
       {
         saveStreamDeltas: true,
-        ...(modelOverride && { model: modelOverride }),
       }
     );
 
@@ -98,6 +116,7 @@ export const generateResponse = internalAction({
 
     await ctx.runMutation(internal.messages.touchThread, {
       threadId,
+      modelCode,
     });
   },
 });
@@ -128,19 +147,26 @@ export const generateTitle = internalAction({
 });
 
 export const touchThread = internalMutation({
-  args: { threadId: v.string() },
-  handler: async (ctx, { threadId }) => {
+  args: {
+    threadId: v.string(),
+    modelCode: v.string(),
+  },
+  handler: async (ctx, { threadId, modelCode }) => {
     const existing = await ctx.db
       .query("threadMetadata")
       .withIndex("by_threadId", (q) => q.eq("threadId", threadId))
       .unique();
 
     if (existing) {
-      await ctx.db.patch(existing._id, { updatedAt: Date.now() });
+      await ctx.db.patch(existing._id, {
+        updatedAt: Date.now(),
+        lastModelCode: modelCode,
+      });
     } else {
       await ctx.db.insert("threadMetadata", {
         threadId,
         updatedAt: Date.now(),
+        lastModelCode: modelCode,
       });
     }
   },

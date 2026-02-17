@@ -14,9 +14,9 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 - [x] sort thread by date in the list (if animated would be cool) 16/02/2026
 - [x] improve auto scroll behavior (may have to improve later but its done) 16/02/2026
 - [x] improve input box (make it textarea expandable) 16/02/2026
-- [x] add editable BYOK (gotta encrypt it)
-- [x] add user/settings button at the end of the sidebar (or top right of the screen?)
-- [ ] add model selector
+- [x] add editable BYOK (gotta encrypt it) 16/02/2026
+- [x] add user/settings button at the end of the sidebar (or top right of the screen?) 16/02/2026
+- [x] add model selector 17/02/2026
 - [ ] add ability to delete thread
 - [ ] add ability to edit thread title
 
