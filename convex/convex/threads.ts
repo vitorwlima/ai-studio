@@ -1,6 +1,12 @@
 import { v } from "convex/values";
-import { query } from "./_generated/server";
-import { components } from "./_generated/api";
+import {
+  action,
+  internalMutation,
+  mutation,
+  query,
+  type QueryCtx,
+} from "./_generated/server";
+import { components, internal } from "./_generated/api";
 import { paginationOptsValidator } from "convex/server";
 import {
   listMessages,
@@ -8,6 +14,41 @@ import {
   toUIMessages,
   vStreamArgs,
 } from "@convex-dev/agent";
+
+const requireOwnedThread = async (
+  ctx: Pick<QueryCtx, "auth" | "runQuery">,
+  threadId: string
+) => {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) {
+    throw new Error("Unauthorized");
+  }
+
+  const thread = await ctx.runQuery(components.agent.threads.getThread, {
+    threadId,
+  });
+  if (!thread) {
+    throw new Error("Thread not found.");
+  }
+
+  if (thread.userId !== identity.subject) {
+    throw new Error("Forbidden");
+  }
+
+  return thread;
+};
+
+type StreamArgs =
+  | { kind: "list"; startOrder?: number }
+  | { kind: "deltas"; cursors: Array<{ streamId: string; cursor: number }> }
+  | undefined;
+
+const emptyStreamPayload = (streamArgs: StreamArgs) => {
+  if (!streamArgs || streamArgs.kind === "list") {
+    return { kind: "list" as const, messages: [] };
+  }
+  return { kind: "deltas" as const, deltas: [] };
+};
 
 export const list = query({
   args: {},
@@ -59,7 +100,7 @@ export const listThreadMessages = query({
         page: [],
         isDone: true,
         continueCursor: "",
-        streams: undefined,
+        streams: emptyStreamPayload(args.streamArgs),
       };
     }
 
@@ -72,7 +113,7 @@ export const listThreadMessages = query({
         page: [],
         isDone: true,
         continueCursor: "",
-        streams: undefined,
+        streams: emptyStreamPayload(args.streamArgs),
       };
     }
 
@@ -89,7 +130,7 @@ export const listThreadMessages = query({
     return {
       ...listedMessages,
       page: uiMessages,
-      streams,
+      streams: streams ?? emptyStreamPayload(args.streamArgs),
     };
   },
 });
@@ -113,5 +154,65 @@ export const getThreadLastModelCode = query({
       .unique();
 
     return meta?.lastModelCode ?? null;
+  },
+});
+
+export const renameThreadTitle = mutation({
+  args: {
+    threadId: v.string(),
+    title: v.string(),
+  },
+  handler: async (ctx, { threadId, title }) => {
+    await requireOwnedThread(ctx, threadId);
+
+    const normalizedTitle = title.trim();
+    if (!normalizedTitle) {
+      throw new Error("Title is required.");
+    }
+
+    await ctx.runMutation(components.agent.threads.updateThread, {
+      threadId,
+      patch: { title: normalizedTitle },
+    });
+
+    return {
+      threadId,
+      title: normalizedTitle,
+    };
+  },
+});
+
+export const deleteThreadMetadataInternal = internalMutation({
+  args: {
+    threadId: v.string(),
+  },
+  handler: async (ctx, { threadId }) => {
+    const meta = await ctx.db
+      .query("threadMetadata")
+      .withIndex("by_threadId", (q) => q.eq("threadId", threadId))
+      .unique();
+
+    if (meta) {
+      await ctx.db.delete(meta._id);
+    }
+  },
+});
+
+export const deleteThread = action({
+  args: {
+    threadId: v.string(),
+  },
+  handler: async (ctx, { threadId }) => {
+    await requireOwnedThread(ctx, threadId);
+
+    await ctx.runAction(components.agent.threads.deleteAllForThreadIdSync, {
+      threadId,
+    });
+
+    await ctx.runMutation(internal.threads.deleteThreadMetadataInternal, {
+      threadId,
+    });
+
+    return { success: true as const };
   },
 });
