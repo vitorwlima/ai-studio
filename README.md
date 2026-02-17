@@ -35,6 +35,7 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 - [ ] set up proper monorepo to fix convex workarounds. should allow for mobile app and desktop app to reuse the same backend easily.
 - [ ] add better eslint/prettier and tailwind prettier plugin for classnames ordering
 - [ ] update convex agent and ai sdk to v6 when the version is available: https://github.com/get-convex/agent/pull/216
+- [ ] add better env variables management/validation
 - [ ] landing page
 - [ ] implement payment (fixed 4$/month for structure (you can clone and host it for free), plus byok pricing only. goated model)
 - [ ] open source it and post it
