@@ -5,7 +5,9 @@ import { userOpenRouter } from "./openrouter";
 export const agent = new Agent(components.agent, {
   name: "Chat agent",
   // todo: get from selected model
-  languageModel: userOpenRouter.chat("moonshotai/kimi-k2.5"),
+  languageModel: userOpenRouter.chat("openai/gpt-oss-120b", {
+    reasoning: { effort: "low" },
+  }),
   instructions: "",
   maxSteps: 1,
 });

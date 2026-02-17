@@ -1,10 +1,11 @@
 import { api } from "@convex/api";
 import { useMutation } from "convex/react";
 import { LucideArrowUp } from "lucide-react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useUIMessages } from "@convex-dev/agent/react";
 import { cn } from "src/lib/utils";
+import { useAutoScroll } from "./use-auto-scroll";
 
 type Props = {
   threadId: string | undefined;
@@ -13,7 +14,6 @@ type Props = {
 export const ChatContainer: React.FC<Props> = ({ threadId }) => {
   const [input, setInput] = useState("");
   const navigate = useNavigate();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const sendMessage = useMutation(api.messages.sendMessage);
   const messagesResult = useUIMessages(
     api.threads.listThreadMessages,
@@ -21,12 +21,19 @@ export const ChatContainer: React.FC<Props> = ({ threadId }) => {
     { initialNumItems: 9999, stream: true }
   );
 
+  const results = messagesResult?.results ?? [];
+  // const isStreaming = results.some((m) => m.id.includes("stream:"));
+
+  const { scrollContainerRef, lastUserMessageRef, needsScrollSpacer, onSend } =
+    useAutoScroll({ messageCount: results.length });
+
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!input.trim()) return;
 
     const message = input;
     setInput("");
+    onSend();
 
     const result = await sendMessage({
       prompt: message,
@@ -38,23 +45,26 @@ export const ChatContainer: React.FC<Props> = ({ threadId }) => {
     }
   };
 
-  const isStreaming = messagesResult?.results?.some(
-    (m) => m.role === "assistant" && m.status === "pending"
-  );
-
   return (
     <div className="h-full relative flex-1 flex flex-col">
-      <div className="flex-1 overflow-y-auto px-4 py-6">
+      <div
+        ref={scrollContainerRef}
+        className="flex-1 overflow-y-auto px-4 pb-20"
+      >
         <div className="max-w-3xl mx-auto flex flex-col gap-4">
-          {messagesResult?.results?.map((messageResult) => {
+          {results.map((messageResult, index) => {
             const isUser = messageResult.role === "user";
             const reasoning = messageResult.parts.find(
               (part) => part.type === "reasoning"
             );
+            const isLastUserMessage =
+              isUser &&
+              [results.length - 1, results.length - 2].includes(index);
 
             return (
               <div
                 key={messageResult.key}
+                ref={isLastUserMessage ? lastUserMessageRef : null}
                 className={cn("flex", isUser ? "justify-end" : "justify-start")}
               >
                 <div
@@ -81,21 +91,13 @@ export const ChatContainer: React.FC<Props> = ({ threadId }) => {
             );
           })}
 
-          {isStreaming && (
-            <div className="flex justify-start">
-              <div className="flex gap-1.5 px-4 py-3">
-                <span className="size-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:0ms]" />
-                <span className="size-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:150ms]" />
-                <span className="size-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:300ms]" />
-              </div>
-            </div>
+          {needsScrollSpacer && (
+            <div className="min-h-[calc(100dvh-8rem)]" aria-hidden="true" />
           )}
-
-          <div ref={messagesEndRef} />
         </div>
       </div>
 
-      <div className="shrink-0 pb-4 px-4">
+      <div className="absolute w-full bottom-0">
         <form
           onSubmit={handleSubmit}
           className="max-w-3xl mx-auto flex items-center gap-2 rounded-2xl border border-zinc-300 bg-white px-4 py-2 shadow-sm focus-within:border-zinc-400 transition-colors"
