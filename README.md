@@ -13,11 +13,11 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 - [x] add chat container (use hardcoded openrouter key for now) 15/02/2026
 - [x] sort thread by date in the list (if animated would be cool) 16/02/2026
 - [x] improve auto scroll behavior (may have to improve later but its done) 16/02/2026
-- [ ] improve input box (make it textarea expandable)
+- [x] improve input box (make it textarea expandable) 16/02/2026
+- [ ] add editable BYOK (gotta encrypt it)
+- [ ] add user/settings button at the end of the sidebar (or top right of the screen?)
 - [ ] add model selector
 - [ ] add ability to delete thread
-- [ ] add user/settings button at the end of the sidebar (or top right of the screen?)
-- [ ] add editable BYOK (gotta encrypt it)
 - [ ] add ability to edit thread title
 
 ### Later
@@ -29,6 +29,7 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 - [ ] make sidebar collapsible
 - [ ] rethink/polish whole ui
   - [ ] improve reasoning container / messages list
+  - [ ] improve scrolls
 
 ### Structure
 - [ ] set up proper monorepo to fix convex workarounds. should allow for mobile app and desktop app to reuse the same backend easily.
