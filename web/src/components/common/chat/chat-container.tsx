@@ -1,7 +1,7 @@
 import { api } from "@convex/api";
 import { useMutation } from "convex/react";
 import { LucideArrowUp } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useUIMessages } from "@convex-dev/agent/react";
 import { cn } from "src/lib/utils";
@@ -13,6 +13,7 @@ type Props = {
 
 export const ChatContainer: React.FC<Props> = ({ threadId }) => {
   const [input, setInput] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
   const sendMessage = useMutation(api.messages.sendMessage);
   const messagesResult = useUIMessages(
@@ -27,12 +28,22 @@ export const ChatContainer: React.FC<Props> = ({ threadId }) => {
   const { scrollContainerRef, lastUserMessageRef, needsScrollSpacer, onSend } =
     useAutoScroll({ messageCount: results.length });
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const resizeTextarea = useCallback(() => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    ta.style.height = "auto";
+    ta.style.height = `${ta.scrollHeight}px`;
+  }, []);
+
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (!input.trim()) return;
 
     const message = input;
     setInput("");
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
     onSend();
 
     const result = await sendMessage({
@@ -100,18 +111,29 @@ export const ChatContainer: React.FC<Props> = ({ threadId }) => {
       <div className="absolute w-full bottom-0">
         <form
           onSubmit={handleSubmit}
-          className="max-w-3xl mx-auto flex items-center gap-2 rounded-2xl border border-zinc-300 bg-white px-4 py-2 shadow-sm focus-within:border-zinc-400 transition-colors"
+          className="max-w-3xl mx-auto flex items-end gap-2 rounded-2xl border border-zinc-300 bg-white px-4 py-2 shadow-sm focus-within:border-zinc-400 transition-colors"
         >
-          <input
-            className="flex-1 bg-transparent text-sm outline-none placeholder:text-zinc-400"
-            placeholder="Message..."
+          <textarea
+            ref={textareaRef}
+            className="flex-1 self-center bg-transparent text-sm outline-none placeholder:text-zinc-400 resize-none max-h-48 overflow-y-auto"
+            placeholder="Your prompt here..."
+            rows={1}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => {
+              setInput(e.target.value);
+              resizeTextarea();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit();
+              }
+            }}
           />
           <button
             type="submit"
             disabled={!input.trim()}
-            className="shrink-0 size-8 flex items-center justify-center rounded-full bg-zinc-800 text-white disabled:opacity-30 cursor-pointer transition-opacity"
+            className="shrink-0 size-8 mb-0.5 flex items-center justify-center rounded-full bg-zinc-800 text-white disabled:opacity-30 cursor-pointer transition-opacity"
           >
             <LucideArrowUp className="size-4" />
           </button>
