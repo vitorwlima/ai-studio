@@ -45,7 +45,7 @@ export const ChatContainer: React.FC<Props> = ({ threadId }) => {
     ta.style.height = `${ta.scrollHeight}px`;
   }, []);
 
-  const handleSubmit = async (e?: React.FormEvent) => {
+  const handleSubmit = async (e?: React.SubmitEvent<HTMLFormElement>) => {
     e?.preventDefault();
     if (!input.trim()) return;
 
