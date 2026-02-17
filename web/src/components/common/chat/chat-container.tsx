@@ -24,10 +24,19 @@ export const ChatContainer: React.FC<Props> = ({ threadId }) => {
   );
 
   const results = messagesResult?.results ?? [];
+  const lastUserMessageIndex = results.reduce(
+    (lastIndex, message, index) => (message.role === "user" ? index : lastIndex),
+    -1
+  );
   // const isStreaming = results.some((m) => m.id.includes("stream:"));
 
-  const { scrollContainerRef, lastUserMessageRef, needsScrollSpacer, onSend } =
-    useAutoScroll({ messageCount: results.length });
+  const {
+    scrollContainerRef,
+    scrollContentRef,
+    lastUserMessageRef,
+    needsScrollSpacer,
+    onSend,
+  } = useAutoScroll({ messageCount: results.length });
 
   const resizeTextarea = useCallback(() => {
     const ta = textareaRef.current;
@@ -96,15 +105,13 @@ export const ChatContainer: React.FC<Props> = ({ threadId }) => {
             </div>
           </div>
         )}
-        <div className="max-w-3xl mx-auto flex flex-col gap-4">
+        <div ref={scrollContentRef} className="max-w-3xl mx-auto flex flex-col gap-4">
           {results.map((messageResult, index) => {
             const isUser = messageResult.role === "user";
             const reasoning = messageResult.parts.find(
               (part) => part.type === "reasoning"
             );
-            const isLastUserMessage =
-              isUser &&
-              [results.length - 1, results.length - 2].includes(index);
+            const isLastUserMessage = isUser && index === lastUserMessageIndex;
 
             return (
               <div
