@@ -6,6 +6,12 @@ const schema = defineSchema({
     threadId: v.string(),
     updatedAt: v.number(),
   }).index("by_threadId", ["threadId"]),
+
+  userSettings: defineTable({
+    userId: v.string(),
+    encryptedOpenRouterKey: v.string(),
+    maskedKey: v.string(),
+  }).index("by_userId", ["userId"]),
 });
 
 export default schema;

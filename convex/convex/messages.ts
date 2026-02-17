@@ -13,7 +13,8 @@ import { v } from "convex/values";
 import { components } from "./_generated/api";
 import { agent } from "./lib/agent";
 import { generateText } from "ai";
-import { aiStudioOpenRouter } from "./lib/openrouter";
+import { aiStudioOpenRouter, createUserOpenRouter } from "./lib/openrouter";
+import { decrypt } from "./lib/crypto";
 
 export const sendMessage = mutation({
   args: { prompt: v.string(), threadId: v.optional(v.string()) },
@@ -73,11 +74,24 @@ export const generateResponse = internalAction({
     promptMessageId: v.string(),
   },
   handler: async (ctx, { threadId, userId, promptMessageId }) => {
+    const settings = await ctx.runQuery(
+      internal.settings.getUserSettings,
+      { userId }
+    );
+
+    const modelOverride = settings?.encryptedOpenRouterKey
+      ? createUserOpenRouter(await decrypt(settings.encryptedOpenRouterKey))
+          .chat("openai/gpt-oss-120b", { reasoning: { effort: "low" } })
+      : undefined;
+
     const result = await agent.streamText(
       ctx,
       { threadId, userId },
       { promptMessageId },
-      { saveStreamDeltas: true }
+      {
+        saveStreamDeltas: true,
+        ...(modelOverride && { model: modelOverride }),
+      }
     );
 
     await result.consumeStream();

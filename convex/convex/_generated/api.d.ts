@@ -9,8 +9,10 @@
  */
 
 import type * as lib_agent from "../lib/agent.js";
+import type * as lib_crypto from "../lib/crypto.js";
 import type * as lib_openrouter from "../lib/openrouter.js";
 import type * as messages from "../messages.js";
+import type * as settings from "../settings.js";
 import type * as threads from "../threads.js";
 
 import type {
@@ -21,8 +23,10 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   "lib/agent": typeof lib_agent;
+  "lib/crypto": typeof lib_crypto;
   "lib/openrouter": typeof lib_openrouter;
   messages: typeof messages;
+  settings: typeof settings;
   threads: typeof threads;
 }>;
 

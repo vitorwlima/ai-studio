@@ -1,8 +1,8 @@
 import { api } from "@convex/api";
-import { useMutation } from "convex/react";
-import { LucideArrowUp } from "lucide-react";
+import { useMutation, useQuery } from "convex/react";
+import { LucideArrowUp, LucideKey, LucideMessageSquare } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useUIMessages } from "@convex-dev/agent/react";
 import { cn } from "src/lib/utils";
 import { useAutoScroll } from "./use-auto-scroll";
@@ -16,6 +16,7 @@ export const ChatContainer: React.FC<Props> = ({ threadId }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
   const sendMessage = useMutation(api.messages.sendMessage);
+  const hasApiKey = useQuery(api.settings.hasApiKey);
   const messagesResult = useUIMessages(
     api.threads.listThreadMessages,
     threadId ? { threadId } : "skip",
@@ -56,12 +57,45 @@ export const ChatContainer: React.FC<Props> = ({ threadId }) => {
     }
   };
 
+  const showEmptyState = !threadId && results.length === 0;
+  const inputDisabled = hasApiKey === false;
+
   return (
     <div className="h-full relative flex-1 flex flex-col">
       <div
         ref={scrollContainerRef}
         className="flex-1 overflow-y-auto px-4 pb-20"
       >
+        {showEmptyState && (
+          <div className="h-full flex items-center justify-center">
+            <div className="flex flex-col items-center gap-3 text-center">
+              {hasApiKey === false ? (
+                <>
+                  <LucideKey className="size-8 text-zinc-300" />
+                  <p className="text-sm text-zinc-500">
+                    Add your OpenRouter API key to get started
+                  </p>
+                  <Link
+                    to="/settings"
+                    className="text-sm bg-zinc-800 text-white px-4 py-1.5 rounded-lg hover:bg-zinc-700 transition-colors"
+                  >
+                    Add API key
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <LucideMessageSquare className="size-8 text-zinc-300" />
+                  <p className="text-sm text-zinc-500">
+                    Start a conversation
+                  </p>
+                  <p className="text-xs text-zinc-400">
+                    Type a message below to begin
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+        )}
         <div className="max-w-3xl mx-auto flex flex-col gap-4">
           {results.map((messageResult, index) => {
             const isUser = messageResult.role === "user";
@@ -115,10 +149,11 @@ export const ChatContainer: React.FC<Props> = ({ threadId }) => {
         >
           <textarea
             ref={textareaRef}
-            className="flex-1 self-center bg-transparent text-sm outline-none placeholder:text-zinc-400 resize-none max-h-48 overflow-y-auto"
-            placeholder="Your prompt here..."
+            className="flex-1 self-center bg-transparent text-sm outline-none placeholder:text-zinc-400 resize-none max-h-48 overflow-y-auto disabled:opacity-50"
+            placeholder={inputDisabled ? "Add an API key in settings to start chatting..." : "Your prompt here..."}
             rows={1}
             value={input}
+            disabled={inputDisabled}
             onChange={(e) => {
               setInput(e.target.value);
               resizeTextarea();
@@ -132,7 +167,7 @@ export const ChatContainer: React.FC<Props> = ({ threadId }) => {
           />
           <button
             type="submit"
-            disabled={!input.trim()}
+            disabled={!input.trim() || inputDisabled}
             className="shrink-0 size-8 mb-0.5 flex items-center justify-center rounded-full bg-zinc-800 text-white disabled:opacity-30 cursor-pointer transition-opacity"
           >
             <LucideArrowUp className="size-4" />

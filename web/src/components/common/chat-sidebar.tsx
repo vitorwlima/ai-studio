@@ -1,9 +1,11 @@
 import { api } from "@convex/api";
+import { useUser } from "@clerk/clerk-react";
 import { useUIMessages } from "@convex-dev/agent/react";
 import { useQuery } from "convex/react";
 import {
   LucideLoader,
   LucidePanelRightOpen,
+  LucideSettings,
   LucideSquarePen,
 } from "lucide-react";
 import { Link, useParams } from "react-router";
@@ -47,6 +49,7 @@ const ThreadLink = ({
 export const ChatSidebar = () => {
   const threads = useQuery(api.threads.list);
   const { threadId } = useParams();
+  const { user } = useUser();
 
   return (
     <div className="h-full flex flex-col gap-2 w-64">
@@ -83,6 +86,27 @@ export const ChatSidebar = () => {
           ))}
         </div>
       </div>
+
+      {user && (
+        <div className="flex items-center justify-between border border-zinc-300 rounded-xl p-2 w-full">
+          <div className="flex items-center gap-2 min-w-0">
+            <img
+              src={user.imageUrl}
+              alt={user.fullName ?? "User"}
+              className="size-6 rounded-full shrink-0"
+            />
+            <span className="text-sm font-medium truncate">
+              {user.fullName ?? user.primaryEmailAddress?.emailAddress}
+            </span>
+          </div>
+          <Link
+            to="/settings"
+            className="p-1 flex items-center justify-center rounded-lg hover:bg-zinc-300 transition-colors shrink-0"
+          >
+            <LucideSettings className="size-4" />
+          </Link>
+        </div>
+      )}
     </div>
   );
 };
