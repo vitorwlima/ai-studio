@@ -6,7 +6,7 @@ export const Chat = () => {
   const { threadId } = useParams<{ threadId: string | undefined }>();
 
   return (
-    <main className="h-screen flex p-4 gap-4">
+    <main className="h-dvh flex p-4 gap-4">
       <ChatSidebar />
       <ChatContainer key={threadId ?? "new"} threadId={threadId} />
     </main>
