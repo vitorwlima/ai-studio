@@ -21,7 +21,7 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 - [x] add ability to edit thread title 17/02/2026
 
 ### Later
-- [ ] render markdown properly
+- [x] render markdown properly 18/02/2026
 - [ ] try out the smoothText from convex: https://docs.convex.dev/agents/streaming#text-smoothing-with-smoothtext-and-usesmoothtext
 - [ ] animate sidebar thread list reordering
 

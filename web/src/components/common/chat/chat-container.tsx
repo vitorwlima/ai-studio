@@ -12,6 +12,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useUIMessages } from "@convex-dev/agent/react";
+import ReactMarkdown from "react-markdown";
 import { cn } from "src/lib/utils";
 import { useAutoScroll } from "./use-auto-scroll";
 
@@ -32,6 +33,44 @@ type ChatMessage = {
 
 type SavedModel = {
   modelCode: string;
+};
+
+const markdownComponents = {
+  p: ({ children }: { children?: React.ReactNode }) => (
+    <p className="whitespace-pre-wrap break-words">{children}</p>
+  ),
+  a: ({
+    href,
+    children,
+  }: {
+    href?: string;
+    children?: React.ReactNode;
+  }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer noopener"
+      className="underline underline-offset-2"
+    >
+      {children}
+    </a>
+  ),
+  pre: ({ children }: { children?: React.ReactNode }) => (
+    <pre className="overflow-x-auto rounded-lg bg-zinc-900/90 p-3 text-zinc-100">
+      {children}
+    </pre>
+  ),
+  code: ({ children }: { children?: React.ReactNode }) => (
+    <code className="rounded bg-zinc-200 px-1 py-0.5 text-[12px]">
+      {children}
+    </code>
+  ),
+  ul: ({ children }: { children?: React.ReactNode }) => (
+    <ul className="list-disc pl-5">{children}</ul>
+  ),
+  ol: ({ children }: { children?: React.ReactNode }) => (
+    <ol className="list-decimal pl-5">{children}</ol>
+  ),
 };
 
 export const ChatContainer: React.FC<Props> = ({
@@ -275,12 +314,18 @@ export const ChatContainer: React.FC<Props> = ({
                       <summary className="cursor-pointer select-none font-medium">
                         Reasoning
                       </summary>
-                      <p className="mt-1 whitespace-pre-wrap">
-                        {reasoning.text}
-                      </p>
+                      <div className="mt-1 space-y-2">
+                        <ReactMarkdown components={markdownComponents}>
+                          {reasoning.text}
+                        </ReactMarkdown>
+                      </div>
                     </details>
                   )}
-                  <p className="whitespace-pre-wrap">{messageResult.text}</p>
+                  <div className="space-y-2">
+                    <ReactMarkdown components={markdownComponents}>
+                      {messageResult.text}
+                    </ReactMarkdown>
+                  </div>
                   {!isUser && messageResult.modelCode && (
                     <p className="mt-2 text-[11px] text-zinc-400">
                       {messageResult.modelCode}
