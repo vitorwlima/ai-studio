@@ -6,6 +6,14 @@ const schema = defineSchema({
     threadId: v.string(),
     updatedAt: v.number(),
     lastModelCode: v.optional(v.string()),
+    lastReasoningEffort: v.optional(
+      v.union(
+        v.literal("off"),
+        v.literal("low"),
+        v.literal("medium"),
+        v.literal("high")
+      )
+    ),
   }).index("by_threadId", ["threadId"]),
 
   userSettings: defineTable({

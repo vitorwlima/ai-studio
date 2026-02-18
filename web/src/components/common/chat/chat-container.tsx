@@ -20,7 +20,11 @@ type Props = {
   threadId: string | undefined;
   selectedModelCode: string | null;
   onSelectModelCode: (modelCode: string | null) => void;
+  selectedReasoningEffort: ReasoningEffort;
+  onSelectReasoningEffort: (reasoningEffort: ReasoningEffort) => void;
 };
+
+export type ReasoningEffort = "off" | "low" | "medium" | "high";
 
 type ChatMessage = {
   key: string;
@@ -30,6 +34,7 @@ type ChatMessage = {
   status?: "streaming" | "finished" | "aborted";
   parts: Array<{ type: string; text?: string }>;
   modelCode?: string;
+  reasoningEffort?: ReasoningEffort;
 };
 
 type SavedModel = {
@@ -124,7 +129,11 @@ const ChatMessageRow: React.FC<ChatMessageRowProps> = ({
           </ReactMarkdown>
         </div>
         {!isUser && message.modelCode && (
-          <p className="mt-2 text-[11px] text-zinc-400">{message.modelCode}</p>
+          <p className="mt-2 text-[11px] text-zinc-400">
+            {message.reasoningEffort
+              ? `${message.modelCode} (${message.reasoningEffort})`
+              : message.modelCode}
+          </p>
         )}
       </div>
     </div>
@@ -135,6 +144,8 @@ export const ChatContainer: React.FC<Props> = ({
   threadId,
   selectedModelCode,
   onSelectModelCode,
+  selectedReasoningEffort,
+  onSelectReasoningEffort,
 }) => {
   const [input, setInput] = useState("");
   const [isModelMenuOpen, setIsModelMenuOpen] = useState(false);
@@ -156,6 +167,10 @@ export const ChatContainer: React.FC<Props> = ({
     | undefined;
   const threadLastModelCode = useQuery(
     api.threads.getThreadLastModelCode,
+    threadId ? { threadId } : "skip"
+  );
+  const threadLastReasoningEffort = useQuery(
+    api.threads.getThreadLastReasoningEffort,
     threadId ? { threadId } : "skip"
   );
   const messagesResult = useUIMessages(
@@ -198,15 +213,20 @@ export const ChatContainer: React.FC<Props> = ({
     if (initializedSelectionRef.current) return;
     if (savedModels === undefined) return;
     if (threadId && threadLastModelCode === undefined) return;
+    if (threadId && threadLastReasoningEffort === undefined) return;
 
     const firstSavedModelCode = savedModels[0]?.modelCode ?? null;
     let nextSelection = selectedModelCode;
+    let nextReasoningEffort = selectedReasoningEffort;
 
     if (threadId) {
       if (threadLastModelCode) {
         nextSelection = threadLastModelCode;
       } else if (!nextSelection) {
         nextSelection = firstSavedModelCode;
+      }
+      if (threadLastReasoningEffort) {
+        nextReasoningEffort = threadLastReasoningEffort;
       }
     } else if (!nextSelection) {
       nextSelection = firstSavedModelCode;
@@ -215,14 +235,20 @@ export const ChatContainer: React.FC<Props> = ({
     if (nextSelection !== selectedModelCode) {
       onSelectModelCode(nextSelection);
     }
+    if (nextReasoningEffort !== selectedReasoningEffort) {
+      onSelectReasoningEffort(nextReasoningEffort);
+    }
 
     initializedSelectionRef.current = true;
   }, [
     savedModels,
     selectedModelCode,
+    selectedReasoningEffort,
     onSelectModelCode,
+    onSelectReasoningEffort,
     threadId,
     threadLastModelCode,
+    threadLastReasoningEffort,
   ]);
 
   const handleSelectModel = (modelCode: string) => {
@@ -279,6 +305,7 @@ export const ChatContainer: React.FC<Props> = ({
       prompt: message,
       threadId,
       modelCode: selectedModelCode,
+      reasoningEffort: selectedReasoningEffort,
     });
 
     if (!threadId && result?.threadId) {
@@ -467,6 +494,22 @@ export const ChatContainer: React.FC<Props> = ({
                   </div>
                 </div>
               )}
+            </div>
+
+            <div className="relative">
+              <select
+                value={selectedReasoningEffort}
+                onChange={(e) =>
+                  onSelectReasoningEffort(e.target.value as ReasoningEffort)
+                }
+                className="rounded-lg border border-zinc-300 px-3 py-1.5 text-xs text-zinc-700 hover:bg-zinc-100 transition-colors cursor-pointer outline-none focus:border-zinc-500"
+                aria-label="Reasoning effort"
+              >
+                <option value="off">Reasoning: off</option>
+                <option value="low">Reasoning: low</option>
+                <option value="medium">Reasoning: medium</option>
+                <option value="high">Reasoning: high</option>
+              </select>
             </div>
 
             {selectedModelCode && !selectedModelIsSaved && (

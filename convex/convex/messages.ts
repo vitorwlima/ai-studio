@@ -15,14 +15,19 @@ import { buildUserAgent } from "./lib/agent";
 import { generateText } from "ai";
 import { aiStudioOpenRouter, createUserOpenRouter } from "./lib/openrouter";
 import { decrypt } from "./lib/crypto";
+import {
+  reasoningEffortDetails,
+  reasoningEffortValidator,
+} from "./lib/reasoning";
 
 export const sendMessage = mutation({
   args: {
     prompt: v.string(),
     threadId: v.optional(v.string()),
     modelCode: v.string(),
+    reasoningEffort: reasoningEffortValidator,
   },
-  handler: async (ctx, { prompt, modelCode, ...args }) => {
+  handler: async (ctx, { prompt, modelCode, reasoningEffort, ...args }) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
       throw new Error("Unauthorized");
@@ -41,6 +46,7 @@ export const sendMessage = mutation({
       metadata: {
         model: modelCode,
         provider: "openrouter",
+        reasoningDetails: reasoningEffortDetails(reasoningEffort),
       },
     });
 
@@ -49,6 +55,7 @@ export const sendMessage = mutation({
       userId,
       promptMessageId: messageId,
       modelCode,
+      reasoningEffort,
     });
 
     const existingMeta = await ctx.db
@@ -60,12 +67,14 @@ export const sendMessage = mutation({
       await ctx.db.patch(existingMeta._id, {
         updatedAt: Date.now(),
         lastModelCode: modelCode,
+        lastReasoningEffort: reasoningEffort,
       });
     } else {
       await ctx.db.insert("threadMetadata", {
         threadId,
         updatedAt: Date.now(),
         lastModelCode: modelCode,
+        lastReasoningEffort: reasoningEffort,
       });
     }
 
@@ -86,8 +95,12 @@ export const generateResponse = internalAction({
     userId: v.string(),
     promptMessageId: v.string(),
     modelCode: v.string(),
+    reasoningEffort: reasoningEffortValidator,
   },
-  handler: async (ctx, { threadId, userId, promptMessageId, modelCode }) => {
+  handler: async (
+    ctx,
+    { threadId, userId, promptMessageId, modelCode, reasoningEffort }
+  ) => {
     const settings = await ctx.runQuery(internal.settings.getUserSettings, {
       userId,
     });
@@ -97,8 +110,13 @@ export const generateResponse = internalAction({
 
     const userOpenRouterKey = await decrypt(settings.encryptedOpenRouterKey);
 
+    const reasoning =
+      reasoningEffort === "off"
+        ? { enabled: false, effort: "low" as const }
+        : { enabled: true, effort: reasoningEffort };
+
     const model = createUserOpenRouter(userOpenRouterKey).chat(modelCode, {
-      reasoning: { effort: "low" },
+      reasoning,
     });
 
     const agent = buildUserAgent(model);
@@ -117,6 +135,7 @@ export const generateResponse = internalAction({
     await ctx.runMutation(internal.messages.touchThread, {
       threadId,
       modelCode,
+      reasoningEffort,
     });
   },
 });
@@ -150,8 +169,9 @@ export const touchThread = internalMutation({
   args: {
     threadId: v.string(),
     modelCode: v.string(),
+    reasoningEffort: reasoningEffortValidator,
   },
-  handler: async (ctx, { threadId, modelCode }) => {
+  handler: async (ctx, { threadId, modelCode, reasoningEffort }) => {
     const existing = await ctx.db
       .query("threadMetadata")
       .withIndex("by_threadId", (q) => q.eq("threadId", threadId))
@@ -161,12 +181,14 @@ export const touchThread = internalMutation({
       await ctx.db.patch(existing._id, {
         updatedAt: Date.now(),
         lastModelCode: modelCode,
+        lastReasoningEffort: reasoningEffort,
       });
     } else {
       await ctx.db.insert("threadMetadata", {
         threadId,
         updatedAt: Date.now(),
         lastModelCode: modelCode,
+        lastReasoningEffort: reasoningEffort,
       });
     }
   },

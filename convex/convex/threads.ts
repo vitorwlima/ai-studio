@@ -14,6 +14,10 @@ import {
   toUIMessages,
   vStreamArgs,
 } from "@convex-dev/agent";
+import {
+  parseReasoningEffortFromDetails,
+  type ReasoningEffort,
+} from "./lib/reasoning";
 
 const requireOwnedThread = async (
   ctx: Pick<QueryCtx, "auth" | "runQuery">,
@@ -121,9 +125,40 @@ export const listThreadMessages = query({
     const modelCodeByMessageId = new Map(
       listedMessages.page.map((message) => [message._id, message.model])
     );
+    const reasoningEffortByOrder = new Map<number, ReasoningEffort>();
+    const reasoningEffortByMessageId = new Map<string, ReasoningEffort>();
+    let activeReasoningEffort: ReasoningEffort = "low";
+    const orderedMessages = [...listedMessages.page].sort((a, b) => {
+      if (a.order !== b.order) return a.order - b.order;
+      return a.stepOrder - b.stepOrder;
+    });
+
+    for (const message of orderedMessages) {
+      const messageReasoningEffort = parseReasoningEffortFromDetails(
+        message.reasoningDetails
+      );
+      const messageRole = message.message?.role;
+
+      if (messageRole === "user" && messageReasoningEffort) {
+        activeReasoningEffort = messageReasoningEffort;
+        reasoningEffortByOrder.set(message.order, messageReasoningEffort);
+        continue;
+      }
+
+      if (messageRole === "assistant") {
+        const resolvedReasoningEffort =
+          messageReasoningEffort ??
+          reasoningEffortByOrder.get(message.order) ??
+          activeReasoningEffort;
+        activeReasoningEffort = resolvedReasoningEffort;
+        reasoningEffortByMessageId.set(message._id, resolvedReasoningEffort);
+      }
+    }
+
     const uiMessages = toUIMessages(listedMessages.page).map((message) => ({
       ...message,
       modelCode: modelCodeByMessageId.get(message.id),
+      reasoningEffort: reasoningEffortByMessageId.get(message.id),
     }));
     const streams = await syncStreams(ctx, components.agent, args);
 
@@ -154,6 +189,28 @@ export const getThreadLastModelCode = query({
       .unique();
 
     return meta?.lastModelCode ?? null;
+  },
+});
+
+export const getThreadLastReasoningEffort = query({
+  args: { threadId: v.string() },
+  handler: async (ctx, { threadId }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
+
+    const thread = await ctx.runQuery(components.agent.threads.getThread, {
+      threadId,
+    });
+    if (!thread || thread.userId !== identity.subject) {
+      return null;
+    }
+
+    const meta = await ctx.db
+      .query("threadMetadata")
+      .withIndex("by_threadId", (q) => q.eq("threadId", threadId))
+      .unique();
+
+    return meta?.lastReasoningEffort ?? null;
   },
 });
 
