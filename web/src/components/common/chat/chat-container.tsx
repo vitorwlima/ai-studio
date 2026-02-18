@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { useUIMessages } from "@convex-dev/agent/react";
+import { useSmoothText, useUIMessages } from "@convex-dev/agent/react";
 import ReactMarkdown from "react-markdown";
 import { cn } from "src/lib/utils";
 import { useAutoScroll } from "./use-auto-scroll";
@@ -27,6 +27,7 @@ type ChatMessage = {
   id: string;
   role: string;
   text: string;
+  status?: "streaming" | "finished" | "aborted";
   parts: Array<{ type: string; text?: string }>;
   modelCode?: string;
 };
@@ -71,6 +72,63 @@ const markdownComponents = {
   ol: ({ children }: { children?: React.ReactNode }) => (
     <ol className="list-decimal pl-5">{children}</ol>
   ),
+};
+
+type ChatMessageRowProps = {
+  message: ChatMessage;
+  isLastUserMessage: boolean;
+  lastUserMessageRef: React.RefObject<HTMLDivElement | null>;
+};
+
+const ChatMessageRow: React.FC<ChatMessageRowProps> = ({
+  message,
+  isLastUserMessage,
+  lastUserMessageRef,
+}) => {
+  const isUser = message.role === "user";
+  const reasoning = message.parts.find((part) => part.type === "reasoning");
+  const reasoningText = reasoning?.text ?? "";
+  const [visibleText] = useSmoothText(message.text, {
+    startStreaming: message.status === "streaming",
+  });
+  const [visibleReasoningText] = useSmoothText(reasoningText, {
+    startStreaming: message.status === "streaming",
+  });
+
+  return (
+    <div
+      ref={isLastUserMessage ? lastUserMessageRef : null}
+      className={cn("flex", isUser ? "justify-end" : "justify-start")}
+    >
+      <div
+        className={cn(
+          "rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
+          isUser ? "bg-zinc-800 text-zinc-100 max-w-[85%]" : "text-zinc-800"
+        )}
+      >
+        {!isUser && reasoning?.text && (
+          <details className="mb-2 text-xs text-zinc-400">
+            <summary className="cursor-pointer select-none font-medium">
+              Reasoning
+            </summary>
+            <div className="mt-1 space-y-2">
+              <ReactMarkdown components={markdownComponents}>
+                {visibleReasoningText}
+              </ReactMarkdown>
+            </div>
+          </details>
+        )}
+        <div className="space-y-2">
+          <ReactMarkdown components={markdownComponents}>
+            {visibleText}
+          </ReactMarkdown>
+        </div>
+        {!isUser && message.modelCode && (
+          <p className="mt-2 text-[11px] text-zinc-400">{message.modelCode}</p>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export const ChatContainer: React.FC<Props> = ({
@@ -289,50 +347,16 @@ export const ChatContainer: React.FC<Props> = ({
         )}
         <div ref={scrollContentRef} className="max-w-3xl mx-auto flex flex-col gap-4">
           {results.map((messageResult, index) => {
-            const isUser = messageResult.role === "user";
-            const reasoning = messageResult.parts.find(
-              (part) => part.type === "reasoning"
-            );
-            const isLastUserMessage = isUser && index === lastUserMessageIndex;
+            const isLastUserMessage =
+              messageResult.role === "user" && index === lastUserMessageIndex;
 
             return (
-              <div
+              <ChatMessageRow
                 key={messageResult.key}
-                ref={isLastUserMessage ? lastUserMessageRef : null}
-                className={cn("flex", isUser ? "justify-end" : "justify-start")}
-              >
-                <div
-                  className={cn(
-                    "rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
-                    isUser
-                      ? "bg-zinc-800 text-zinc-100 max-w-[85%]"
-                      : "text-zinc-800"
-                  )}
-                >
-                  {!isUser && reasoning?.text && (
-                    <details className="mb-2 text-xs text-zinc-400">
-                      <summary className="cursor-pointer select-none font-medium">
-                        Reasoning
-                      </summary>
-                      <div className="mt-1 space-y-2">
-                        <ReactMarkdown components={markdownComponents}>
-                          {reasoning.text}
-                        </ReactMarkdown>
-                      </div>
-                    </details>
-                  )}
-                  <div className="space-y-2">
-                    <ReactMarkdown components={markdownComponents}>
-                      {messageResult.text}
-                    </ReactMarkdown>
-                  </div>
-                  {!isUser && messageResult.modelCode && (
-                    <p className="mt-2 text-[11px] text-zinc-400">
-                      {messageResult.modelCode}
-                    </p>
-                  )}
-                </div>
-              </div>
+                message={messageResult}
+                isLastUserMessage={isLastUserMessage}
+                lastUserMessageRef={lastUserMessageRef}
+              />
             );
           })}
 
