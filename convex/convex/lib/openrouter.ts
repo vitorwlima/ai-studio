@@ -4,6 +4,6 @@ export const aiStudioOpenRouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
 });
 
-export function createUserOpenRouter(apiKey: string) {
+export const createUserOpenRouter = (apiKey: string) => {
   return createOpenRouter({ apiKey });
 }

@@ -6,7 +6,7 @@ type UseAutoScrollOptions = {
 
 const AUTO_SCROLL_BUFFER_PX = 400;
 
-export function useAutoScroll({ messageCount }: UseAutoScrollOptions) {
+export const useAutoScroll = ({ messageCount }: UseAutoScrollOptions) => {
   const [needsScrollSpacer, setNeedsScrollSpacer] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollContentRef = useRef<HTMLDivElement>(null);
