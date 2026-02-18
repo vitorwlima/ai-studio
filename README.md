@@ -17,8 +17,8 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 - [x] add editable BYOK (gotta encrypt it) 16/02/2026
 - [x] add user/settings button at the end of the sidebar (or top right of the screen?) 16/02/2026
 - [x] add model selector 17/02/2026
-- [ ] add ability to delete thread
-- [ ] add ability to edit thread title
+- [x] add ability to delete thread 17/02/2026
+- [x] add ability to edit thread title 17/02/2026
 
 ### Later
 - [ ] render markdown properly
