@@ -1,10 +1,9 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { AUTO_SCROLL_BUFFER_PX } from "../constants";
 
 type UseAutoScrollOptions = {
   messageCount: number;
 };
-
-const AUTO_SCROLL_BUFFER_PX = 400;
 
 export const useAutoScroll = ({ messageCount }: UseAutoScrollOptions) => {
   const [needsScrollSpacer, setNeedsScrollSpacer] = useState(false);
@@ -14,6 +13,7 @@ export const useAutoScroll = ({ messageCount }: UseAutoScrollOptions) => {
   const shouldScrollRef = useRef(false);
   const messageCountAtSendRef = useRef<number | null>(null);
   const hasScrolledRef = useRef(false);
+
   const shouldAutoScroll = () => {
     const container = scrollContainerRef.current;
     const content = scrollContentRef.current;
@@ -23,7 +23,6 @@ export const useAutoScroll = ({ messageCount }: UseAutoScrollOptions) => {
     );
   };
 
-  // Scroll to bottom on initial load / thread switch
   useEffect(() => {
     if (hasScrolledRef.current || messageCount === 0) return;
     const container = scrollContainerRef.current;
@@ -33,7 +32,6 @@ export const useAutoScroll = ({ messageCount }: UseAutoScrollOptions) => {
     }
   }, [messageCount]);
 
-  // Scroll user message to top after sending
   useLayoutEffect(() => {
     if (
       shouldScrollRef.current &&
@@ -75,4 +73,4 @@ export const useAutoScroll = ({ messageCount }: UseAutoScrollOptions) => {
     needsScrollSpacer,
     onSend,
   };
-}
+};

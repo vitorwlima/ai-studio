@@ -27,11 +27,8 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 - [x] error handling 18/02/2026
 
 ### UI/UX
-- [ ] make sidebar collapsible
-- [ ] rethink/polish whole ui
-  - [ ] improve reasoning container / messages list
-  - [ ] improve scrolls
-  - [ ] animate sidebar thread list reordering
+- [x] make sidebar collapsible 18/02/2026
+- [x] rethink/polish whole ui (a lot of work to do still but good enough mvp) 18/02/2026
 
 ### Structure
 - [ ] set up proper monorepo to fix convex workarounds. should allow for mobile app and desktop app to reuse the same backend easily.

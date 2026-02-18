@@ -3,8 +3,20 @@
 
 @theme {
   --font-sans: "Montserrat Variable", sans-serif;
+  --animate-fade-in: fade-in 150ms ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 body {
-  @apply bg-zinc-200 text-zinc-900;
+  @apply bg-white text-zinc-900;
 }
