@@ -125,8 +125,10 @@ export const listThreadMessages = query({
     const modelCodeByMessageId = new Map(
       listedMessages.page.map((message) => [message._id, message.model])
     );
+    const modelCodeByOrder = new Map<number, string>();
     const reasoningEffortByOrder = new Map<number, ReasoningEffort>();
     const reasoningEffortByMessageId = new Map<string, ReasoningEffort>();
+    const errorByOrder = new Map<number, string>();
     let activeReasoningEffort: ReasoningEffort = "low";
     const orderedMessages = [...listedMessages.page].sort((a, b) => {
       if (a.order !== b.order) return a.order - b.order;
@@ -138,6 +140,10 @@ export const listThreadMessages = query({
         message.reasoningDetails
       );
       const messageRole = message.message?.role;
+
+      if (message.model && !modelCodeByOrder.has(message.order)) {
+        modelCodeByOrder.set(message.order, message.model);
+      }
 
       if (messageRole === "user" && messageReasoningEffort) {
         activeReasoningEffort = messageReasoningEffort;
@@ -152,13 +158,19 @@ export const listThreadMessages = query({
           activeReasoningEffort;
         activeReasoningEffort = resolvedReasoningEffort;
         reasoningEffortByMessageId.set(message._id, resolvedReasoningEffort);
+
+        if (message.status === "failed" && message.error) {
+          errorByOrder.set(message.order, message.error);
+        }
       }
     }
 
     const uiMessages = toUIMessages(listedMessages.page).map((message) => ({
       ...message,
-      modelCode: modelCodeByMessageId.get(message.id),
+      modelCode:
+        modelCodeByMessageId.get(message.id) ?? modelCodeByOrder.get(message.order),
       reasoningEffort: reasoningEffortByMessageId.get(message.id),
+      error: message.role === "assistant" ? errorByOrder.get(message.order) : undefined,
     }));
     const streams = await syncStreams(ctx, components.agent, args);
 

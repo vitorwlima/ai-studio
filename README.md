@@ -23,7 +23,8 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 ### Later
 - [x] render markdown properly 18/02/2026
 - [x] try out the smoothText from convex: https://docs.convex.dev/agents/streaming#text-smoothing-with-smoothtext-and-usesmoothtext (update: works great) 18/02/2026
-- [ ] add reasoning selector (off, low, medium, high)
+- [x] add reasoning selector (off, low, medium, high) 18/02/2026
+- [x] error handling 18/02/2026
 
 ### UI/UX
 - [ ] make sidebar collapsible
@@ -43,4 +44,4 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 - [ ] add license
 - [ ] open source it and post it
 - [ ] browser search tool
-- [ ] error handling (test invalid key or with no funds)
+

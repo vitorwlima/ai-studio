@@ -31,7 +31,8 @@ type ChatMessage = {
   id: string;
   role: string;
   text: string;
-  status?: "streaming" | "finished" | "aborted";
+  status?: "streaming" | "pending" | "success" | "failed" | "finished" | "aborted";
+  error?: string;
   parts: Array<{ type: string; text?: string }>;
   modelCode?: string;
   reasoningEffort?: ReasoningEffort;
@@ -128,6 +129,11 @@ const ChatMessageRow: React.FC<ChatMessageRowProps> = ({
             {visibleText}
           </ReactMarkdown>
         </div>
+        {!isUser && (message.error || message.status === "failed") && (
+          <p className="mt-2 whitespace-pre-wrap break-words rounded-md border border-red-200 bg-red-50 px-2 py-1 text-xs text-red-700">
+            {message.error ?? "The model request failed."}
+          </p>
+        )}
         {!isUser && message.modelCode && (
           <p className="mt-2 text-[11px] text-zinc-400">
             {message.reasoningEffort
