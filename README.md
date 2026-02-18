@@ -23,13 +23,14 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 ### Later
 - [x] render markdown properly 18/02/2026
 - [ ] try out the smoothText from convex: https://docs.convex.dev/agents/streaming#text-smoothing-with-smoothtext-and-usesmoothtext
-- [ ] animate sidebar thread list reordering
+- [ ] add reasoning selector (off, low, medium, high)
 
 ### UI/UX
 - [ ] make sidebar collapsible
 - [ ] rethink/polish whole ui
   - [ ] improve reasoning container / messages list
   - [ ] improve scrolls
+  - [ ] animate sidebar thread list reordering
 
 ### Structure
 - [ ] set up proper monorepo to fix convex workarounds. should allow for mobile app and desktop app to reuse the same backend easily.
