@@ -14,6 +14,10 @@ export const useThreadMessages = ({ threadId }: UseThreadMessagesOptions) => {
   );
 
   const messages = (messagesResult?.results ?? []) as ChatMessage[];
+  const isStreaming = messages.some(
+    (message) =>
+      message.status === "streaming" || message.id.startsWith("stream:")
+  );
 
   const lastUserMessageIndex = messages.reduce(
     (lastIndex, message, index) =>
@@ -24,5 +28,6 @@ export const useThreadMessages = ({ threadId }: UseThreadMessagesOptions) => {
   return {
     messages,
     lastUserMessageIndex,
+    isStreaming,
   };
 };

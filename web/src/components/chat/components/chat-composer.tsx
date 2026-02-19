@@ -11,6 +11,7 @@ import {
   type FormEvent,
 } from "react";
 import { useNavigate } from "react-router";
+import { useThreadMessages } from "../hooks/use-thread-messages";
 import type { ReasoningEffort, ThreadItem } from "../types";
 import { ModelPicker } from "./model-picker";
 import { ReasoningSelect } from "./reasoning-select";
@@ -42,6 +43,7 @@ export const ChatComposer = ({
   const sendMessage = useMutation(api.messages.sendMessage);
 
   const hasApiKey = useQuery(api.settings.hasApiKey);
+  const { isStreaming } = useThreadMessages({ threadId });
   const threads = useQuery(api.threads.list);
   const threadItems = useMemo(
     () => (threads?.page ?? []) as ThreadItem[],
@@ -82,7 +84,14 @@ export const ChatComposer = ({
   const handleSubmit = useCallback(
     async (e?: FormEvent<HTMLFormElement>) => {
       e?.preventDefault();
-      if (!input.trim() || !selectedModelCode || hasApiKey !== true) return;
+      if (
+        !input.trim() ||
+        !selectedModelCode ||
+        hasApiKey !== true ||
+        isStreaming
+      ) {
+        return;
+      }
 
       const message = input;
       setInput("");
@@ -106,6 +115,7 @@ export const ChatComposer = ({
       input,
       selectedModelCode,
       hasApiKey,
+      isStreaming,
       onSend,
       sendMessage,
       threadId,
@@ -128,7 +138,11 @@ export const ChatComposer = ({
   }, [onSuggestionHandlerReady, selectSuggestion]);
 
   const inputDisabled = hasApiKey === false;
-  const canSend = !!input.trim() && hasApiKey === true && !!selectedModelCode;
+  const canSend =
+    !!input.trim() &&
+    hasApiKey === true &&
+    !!selectedModelCode &&
+    !isStreaming;
   const inputPlaceholder =
     hasApiKey === false
       ? "Add an API key in settings to start chatting..."
