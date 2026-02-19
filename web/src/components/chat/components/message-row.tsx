@@ -1,6 +1,7 @@
 import { useSmoothText } from "@convex-dev/agent/react";
 import { useState, type RefObject } from "react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { markdownComponents } from "../markdown-components";
 import type { ChatMessage } from "../types";
 
@@ -34,7 +35,10 @@ export const MessageRow = ({
       >
         <div className="rounded-2xl rounded-br-md bg-zinc-800 text-zinc-100 px-4 py-2.5 text-sm leading-relaxed max-w-[75%]">
           <div className="space-y-2">
-            <ReactMarkdown components={markdownComponents}>
+            <ReactMarkdown
+              components={markdownComponents}
+              remarkPlugins={[remarkGfm]}
+            >
               {visibleText}
             </ReactMarkdown>
           </div>
@@ -60,7 +64,10 @@ export const MessageRow = ({
             </button>
             {reasoningOpen && (
               <div className="mt-2 rounded-lg bg-zinc-50 p-3 text-xs text-zinc-500 space-y-2">
-                <ReactMarkdown components={markdownComponents}>
+                <ReactMarkdown
+                  components={markdownComponents}
+                  remarkPlugins={[remarkGfm]}
+                >
                   {visibleReasoningText}
                 </ReactMarkdown>
               </div>
@@ -69,7 +76,10 @@ export const MessageRow = ({
         )}
 
         <div className="space-y-2">
-          <ReactMarkdown components={markdownComponents}>
+          <ReactMarkdown
+            components={markdownComponents}
+            remarkPlugins={[remarkGfm]}
+          >
             {visibleText}
           </ReactMarkdown>
           {message.status === "streaming" && (
