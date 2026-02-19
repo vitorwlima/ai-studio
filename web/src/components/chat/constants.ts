@@ -1,1 +1,2 @@
 export const AUTO_SCROLL_BUFFER_PX = 400;
+export const NEW_MESSAGE_SCROLL_TOP_PADDING_PX = 16;

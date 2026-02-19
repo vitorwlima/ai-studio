@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { AUTO_SCROLL_BUFFER_PX } from "../constants";
+import {
+  AUTO_SCROLL_BUFFER_PX,
+  NEW_MESSAGE_SCROLL_TOP_PADDING_PX,
+} from "../constants";
 
 type UseAutoScrollOptions = {
   messageCount: number;
@@ -45,7 +48,10 @@ export const useAutoScroll = ({ messageCount }: UseAutoScrollOptions) => {
         const containerRect = container.getBoundingClientRect();
         const messageRect = userMessage.getBoundingClientRect();
         const offsetFromContainerTop = messageRect.top - containerRect.top;
-        const targetScrollTop = container.scrollTop + offsetFromContainerTop;
+        const targetScrollTop =
+          container.scrollTop +
+          offsetFromContainerTop -
+          NEW_MESSAGE_SCROLL_TOP_PADDING_PX;
         const maxScrollTop = container.scrollHeight - container.clientHeight;
 
         container.scrollTop = Math.max(
