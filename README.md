@@ -34,6 +34,7 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 - [x] landing page 19/02/2026
 - [x] implement payment (fixed 4$/month for structure (you can clone and host it for free), plus byok pricing only. goated model) 19/02/2026
 - [ ] set up prod
+- [ ] improve settings and user management (can not logout yet lol)
 - [ ] add agents.md
 - [ ] add license
 - [ ] open source it and post it
