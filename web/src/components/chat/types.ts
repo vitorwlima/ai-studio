@@ -27,6 +27,8 @@ export type ThreadItem = {
   title?: string;
   _creationTime: number;
   updatedAt: number;
+  lastModelCode?: string | null;
+  lastReasoningEffort?: ReasoningEffort | null;
 };
 
 export type DeleteModalThread = {

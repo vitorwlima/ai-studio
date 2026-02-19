@@ -10,7 +10,7 @@ import {
   type RefObject,
 } from "react";
 import { useNavigate } from "react-router";
-import type { ReasoningEffort, SavedModel } from "../types";
+import type { ReasoningEffort, SavedModel, ThreadItem } from "../types";
 
 type UseChatComposerOptions = {
   threadId: string | undefined;
@@ -69,16 +69,17 @@ export const useChatComposer = ({
   const deleteUserModel = useMutation(api.models.deleteUserModel);
 
   const hasApiKey = useQuery(api.settings.hasApiKey);
+  const threads = useQuery(api.threads.list);
   const savedModels = useQuery(api.models.listUserModels) as
     | SavedModel[]
     | undefined;
-  const threadLastModelCode = useQuery(
-    api.threads.getThreadLastModelCode,
-    threadId ? { threadId } : "skip"
+  const threadItems = useMemo(
+    () => (threads?.page ?? []) as ThreadItem[],
+    [threads?.page]
   );
-  const threadLastReasoningEffort = useQuery(
-    api.threads.getThreadLastReasoningEffort,
-    threadId ? { threadId } : "skip"
+  const activeThread = useMemo(
+    () => threadItems.find((thread) => thread._id === threadId),
+    [threadItems, threadId]
   );
 
   const savedModelCodes = useMemo(
@@ -104,22 +105,21 @@ export const useChatComposer = ({
   useEffect(() => {
     if (initializedSelectionRef.current) return;
     if (savedModels === undefined) return;
-    if (threadId && threadLastModelCode === undefined) return;
-    if (threadId && threadLastReasoningEffort === undefined) return;
+    if (threadId && threads === undefined) return;
 
     const firstSavedModelCode = savedModels[0]?.modelCode ?? null;
     let nextSelectedModelCode = selectedModelCode;
     let nextReasoningEffort = selectedReasoningEffort;
 
     if (threadId) {
-      if (threadLastModelCode) {
-        nextSelectedModelCode = threadLastModelCode;
+      if (activeThread?.lastModelCode) {
+        nextSelectedModelCode = activeThread.lastModelCode;
       } else if (!nextSelectedModelCode) {
         nextSelectedModelCode = firstSavedModelCode;
       }
 
-      if (threadLastReasoningEffort) {
-        nextReasoningEffort = threadLastReasoningEffort;
+      if (activeThread?.lastReasoningEffort) {
+        nextReasoningEffort = activeThread.lastReasoningEffort;
       }
     } else if (!nextSelectedModelCode) {
       nextSelectedModelCode = firstSavedModelCode;
@@ -136,11 +136,11 @@ export const useChatComposer = ({
     initializedSelectionRef.current = true;
   }, [
     savedModels,
+    threads,
+    activeThread,
     selectedModelCode,
     selectedReasoningEffort,
     threadId,
-    threadLastModelCode,
-    threadLastReasoningEffort,
   ]);
 
   const addModel = useCallback(

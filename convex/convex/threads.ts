@@ -78,6 +78,8 @@ export const list = query({
         return {
           ...thread,
           updatedAt: meta?.updatedAt ?? thread._creationTime,
+          lastModelCode: meta?.lastModelCode ?? null,
+          lastReasoningEffort: meta?.lastReasoningEffort ?? null,
         };
       })
     );
