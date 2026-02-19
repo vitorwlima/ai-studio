@@ -105,8 +105,36 @@ export const ThreadRow = ({
 
   return (
     <div
+      role="button"
+      tabIndex={isEditing ? -1 : 0}
+      onClick={() => {
+        if (!isEditing) {
+          scheduleNavigation();
+        }
+      }}
+      onDoubleClick={(event) => {
+        if (isEditing) return;
+
+        event.preventDefault();
+        if (navigateTimeoutRef.current !== null) {
+          window.clearTimeout(navigateTimeoutRef.current);
+          navigateTimeoutRef.current = null;
+        }
+        onActionError(null);
+        setIsEditing(true);
+        setEditingTitle(rowTitle);
+      }}
+      onKeyDown={(event) => {
+        if (isEditing) return;
+
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          scheduleNavigation();
+        }
+      }}
       className={cn(
         "group shrink-0 text-sm p-2 rounded-lg transition-colors hover:bg-zinc-800 flex items-center gap-2",
+        !isEditing && "cursor-pointer",
         isActive && "bg-zinc-800 text-white"
       )}
     >
@@ -140,23 +168,7 @@ export const ThreadRow = ({
           className="min-w-0 flex-1 rounded-md border border-zinc-600 bg-zinc-800 px-2 py-1 text-sm text-white outline-none focus:border-zinc-500 disabled:opacity-50"
         />
       ) : (
-        <button
-          type="button"
-          onClick={scheduleNavigation}
-          onDoubleClick={(event) => {
-            event.preventDefault();
-            if (navigateTimeoutRef.current !== null) {
-              window.clearTimeout(navigateTimeoutRef.current);
-              navigateTimeoutRef.current = null;
-            }
-            onActionError(null);
-            setIsEditing(true);
-            setEditingTitle(rowTitle);
-          }}
-          className="min-w-0 flex-1 truncate text-left cursor-pointer"
-        >
-          <span className="truncate">{rowTitle}</span>
-        </button>
+        <span className="min-w-0 flex-1 truncate">{rowTitle}</span>
       )}
 
       <button
