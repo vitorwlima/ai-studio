@@ -3,7 +3,7 @@ import { useUIMessages } from "@convex-dev/agent/react";
 import { useMutation } from "convex/react";
 import { LucideLoader, LucideTrash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { cn } from "src/lib/utils";
 import type { DeleteModalThread, ThreadItem } from "../types";
 
@@ -105,70 +105,79 @@ export const ThreadRow = ({
 
   return (
     <div
-      role="button"
-      tabIndex={isEditing ? -1 : 0}
-      onClick={() => {
-        if (!isEditing) {
-          scheduleNavigation();
-        }
-      }}
-      onDoubleClick={(event) => {
-        if (isEditing) return;
-
-        event.preventDefault();
-        if (navigateTimeoutRef.current !== null) {
-          window.clearTimeout(navigateTimeoutRef.current);
-          navigateTimeoutRef.current = null;
-        }
-        onActionError(null);
-        setIsEditing(true);
-        setEditingTitle(rowTitle);
-      }}
-      onKeyDown={(event) => {
-        if (isEditing) return;
-
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          scheduleNavigation();
-        }
-      }}
       className={cn(
-        "group shrink-0 text-sm p-2 rounded-lg transition-colors hover:bg-zinc-800 flex items-center gap-2",
+        "group relative shrink-0 text-sm p-2 rounded-lg transition-colors hover:bg-zinc-800 flex items-center gap-2",
         !isEditing && "cursor-pointer",
         isActive && "bg-zinc-800 text-white"
       )}
     >
-      {isStreaming && (
-        <LucideLoader className="size-3 shrink-0 animate-spin text-zinc-500" />
-      )}
-
       {isEditing ? (
-        <input
-          ref={inputRef}
-          type="text"
-          value={editingTitle}
-          onChange={(event) => setEditingTitle(event.target.value)}
-          onBlur={() => {
-            void saveEditing();
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              event.preventDefault();
+        <>
+          {isStreaming && (
+            <LucideLoader className="size-3 shrink-0 animate-spin text-zinc-500" />
+          )}
+          <input
+            ref={inputRef}
+            type="text"
+            value={editingTitle}
+            onChange={(event) => setEditingTitle(event.target.value)}
+            onBlur={() => {
               void saveEditing();
-              return;
-            }
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                void saveEditing();
+                return;
+              }
 
-            if (event.key === "Escape") {
-              event.preventDefault();
-              setIsEditing(false);
-              setEditingTitle(rowTitle);
-            }
-          }}
-          disabled={isRenaming}
-          className="min-w-0 flex-1 rounded-md border border-zinc-600 bg-zinc-800 px-2 py-1 text-sm text-white outline-none focus:border-zinc-500 disabled:opacity-50"
-        />
+              if (event.key === "Escape") {
+                event.preventDefault();
+                setIsEditing(false);
+                setEditingTitle(rowTitle);
+              }
+            }}
+            disabled={isRenaming}
+            className="min-w-0 flex-1 rounded-md border border-zinc-600 bg-zinc-800 px-2 py-1 text-sm text-white outline-none focus:border-zinc-500 disabled:opacity-50"
+          />
+        </>
       ) : (
-        <span className="min-w-0 flex-1 truncate">{rowTitle}</span>
+        <>
+          <Link
+            to={`/chat/${threadId}`}
+            onClick={(event) => {
+              if (
+                event.button !== 0 ||
+                event.metaKey ||
+                event.altKey ||
+                event.ctrlKey ||
+                event.shiftKey
+              ) {
+                return;
+              }
+              event.preventDefault();
+              scheduleNavigation();
+            }}
+            onDoubleClick={(event) => {
+              event.preventDefault();
+              if (navigateTimeoutRef.current !== null) {
+                window.clearTimeout(navigateTimeoutRef.current);
+                navigateTimeoutRef.current = null;
+              }
+              onActionError(null);
+              setIsEditing(true);
+              setEditingTitle(rowTitle);
+            }}
+            className="absolute inset-0 rounded-lg"
+            aria-label={`Open thread ${rowTitle}`}
+          />
+          <div className="relative z-10 min-w-0 flex-1 truncate flex items-center gap-2 pointer-events-none">
+            {isStreaming && (
+              <LucideLoader className="size-3 shrink-0 animate-spin text-zinc-500" />
+            )}
+            <span className="truncate">{rowTitle}</span>
+          </div>
+        </>
       )}
 
       <button
@@ -179,10 +188,10 @@ export const ThreadRow = ({
           onRequestDelete({ threadId, title: rowTitle });
         }}
         className={cn(
-          "shrink-0 rounded-lg p-1 text-zinc-500 transition cursor-pointer hover:text-red-400",
+          "relative z-20 shrink-0 rounded-lg p-1 text-zinc-500 transition cursor-pointer hover:text-red-400",
           isEditing
             ? "opacity-0 pointer-events-none"
-            : "opacity-0 group-hover:opacity-100 focus:opacity-100"
+            : "opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus:opacity-100 focus:pointer-events-auto"
         )}
         aria-label={`Delete thread ${rowTitle}`}
       >
