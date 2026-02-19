@@ -65,7 +65,7 @@ export const SubscriptionSettings = () => {
         </div>
         {!hasProPlan && (
           <p className="text-xs text-zinc-600 mt-2">
-            Subscribe to Pro below to unlock chat and API key settings.
+            Subscribe to Pro below to unlock the app.
           </p>
         )}
       </div>
