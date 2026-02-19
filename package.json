@@ -1,0 +1,20 @@
+{
+  "name": "ai-studio",
+  "private": true,
+  "packageManager": "pnpm@10.24.0",
+  "scripts": {
+    "dev": "turbo run dev --filter=@ai-studio/backend --filter=@ai-studio/web",
+    "dev:all": "turbo run dev --filter=@ai-studio/backend --filter=@ai-studio/web --filter=@ai-studio/landing",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "^8.0.0-beta.13"
+    }
+  },
+  "devDependencies": {
+    "turbo": "^2.5.6"
+  }
+}

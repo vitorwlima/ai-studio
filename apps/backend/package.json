@@ -1,13 +1,16 @@
 {
-  "name": "convex",
+  "name": "@ai-studio/backend",
+  "private": true,
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "dev": "convex dev",
+    "typecheck": "tsc --project convex/tsconfig.json --pretty"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.24.0",
   "dependencies": {
     "@convex-dev/agent": "^0.3.2",
     "@openrouter/ai-sdk-provider": "^1.5.4",
@@ -16,6 +19,7 @@
     "dotenv": "^17.2.4"
   },
   "devDependencies": {
-    "@types/node": "^25.2.3"
+    "@types/node": "^25.2.3",
+    "typescript": "~5.9.3"
   }
 }
