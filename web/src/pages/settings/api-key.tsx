@@ -1,15 +1,10 @@
 import { api } from "@convex/api";
 import { useAction, useMutation, useQuery } from "convex/react";
-import {
-  LucideArrowLeft,
-  LucideExternalLink,
-  LucideKey,
-  LucideTrash2,
-} from "lucide-react";
+import { LucideExternalLink, LucideKey, LucideTrash2 } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router";
+import { SettingsLayout } from "./layout";
 
-export const Settings = () => {
+export const ApiKeySettings = () => {
   const maskedKey = useQuery(api.settings.getMaskedApiKey);
   const saveApiKey = useAction(api.settings.saveApiKey);
   const removeApiKey = useMutation(api.settings.removeApiKey);
@@ -39,17 +34,10 @@ export const Settings = () => {
   };
 
   return (
-    <main className="h-dvh flex flex-col max-w-2xl mx-auto px-6 py-10">
-      <Link
-        to="/"
-        className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-800 transition-colors w-fit mb-8"
-      >
-        <LucideArrowLeft className="size-4" />
-        Back to chat
-      </Link>
-
-      <h1 className="text-xl font-semibold text-zinc-900 mb-6">Settings</h1>
-
+    <SettingsLayout
+      title="Settings"
+      description="Configure your OpenRouter API key."
+    >
       <div className="border border-zinc-200 rounded-xl p-5">
         <div className="flex items-center gap-2 mb-4">
           <LucideKey className="size-4 text-zinc-500" />
@@ -85,7 +73,7 @@ export const Settings = () => {
               placeholder="sk-or-v1-..."
               className="w-full text-sm px-3 py-2 border border-zinc-200 rounded-lg outline-none focus:border-zinc-400 transition-colors"
               onKeyDown={(e) => {
-                if (e.key === "Enter") handleSave();
+                if (e.key === "Enter") void handleSave();
               }}
               autoFocus
             />
@@ -112,7 +100,9 @@ export const Settings = () => {
                   </button>
                 )}
                 <button
-                  onClick={handleSave}
+                  onClick={() => {
+                    void handleSave();
+                  }}
                   disabled={!keyInput.trim() || isSaving}
                   className="text-sm bg-zinc-800 text-white px-4 py-1.5 rounded-lg disabled:opacity-30 cursor-pointer hover:bg-zinc-700 transition-colors"
                 >
@@ -123,6 +113,6 @@ export const Settings = () => {
           </div>
         )}
       </div>
-    </main>
+    </SettingsLayout>
   );
 };

@@ -83,7 +83,7 @@ const SidebarPanel = ({
               </span>
             </div>
             <Link
-              to="/settings"
+              to="/settings/api-key"
               className="p-1.5 flex items-center justify-center rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors shrink-0"
             >
               <LucideSettings className="size-4" />

@@ -32,7 +32,7 @@ export const ChatEmptyState = ({
             </p>
           </div>
           <Link
-            to="/settings"
+            to="/settings/api-key"
             className="text-sm bg-zinc-900 text-white px-5 py-2 rounded-lg hover:bg-zinc-800 transition-colors"
           >
             Go to settings
