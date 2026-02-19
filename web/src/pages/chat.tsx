@@ -1,10 +1,13 @@
-import { useCallback, useState } from "react";
+import { api } from "@convex/api";
+import { useQuery } from "convex/react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router";
 import { ChatContainer, ChatSidebar } from "src/components/chat";
 import { ChatComposer } from "src/components/chat/components/chat-composer";
 
 export const Chat = () => {
   const { threadId } = useParams<{ threadId: string | undefined }>();
+  const threads = useQuery(api.threads.list);
   const [onSend, setOnSend] = useState<() => void>(() => () => {});
   const [selectSuggestion, setSelectSuggestion] = useState<
     (suggestion: string) => void
@@ -12,6 +15,26 @@ export const Chat = () => {
   const [selectedModelCode, setSelectedModelCode] = useState<string | null>(
     null
   );
+
+  const pageTitle = useMemo(() => {
+    if (!threadId) return "AI Studio";
+    if (threads === undefined) return "AI Studio";
+
+    const thread = threads.page.find((item) => item._id === threadId);
+    if (!thread) return "AI Studio";
+
+    const threadName = thread?.title?.trim() || "New Chat";
+
+    return `${threadName} - AI Studio`;
+  }, [threadId, threads]);
+
+  useEffect(() => {
+    document.title = pageTitle;
+
+    return () => {
+      document.title = "AI Studio";
+    };
+  }, [pageTitle]);
 
   const onSendReady = useCallback((nextOnSend: () => void) => {
     setOnSend(() => nextOnSend);
