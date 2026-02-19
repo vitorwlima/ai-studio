@@ -2,9 +2,9 @@
 
 @theme {
   --font-sans: "Montserrat", sans-serif;
-  --color-warm: #d4a574;
-  --color-warm-light: #e8c9a8;
-  --color-warm-dark: #b8864e;
+  --color-warm: #a07850;
+  --color-warm-light: #c4a07a;
+  --color-warm-dark: #7d5c38;
 }
 
 html {
@@ -12,7 +12,7 @@ html {
 }
 
 body {
-  @apply bg-zinc-950 text-zinc-300 antialiased;
+  @apply bg-white text-zinc-600 antialiased;
   font-family: var(--font-sans);
 }
 
