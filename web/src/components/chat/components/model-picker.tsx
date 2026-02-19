@@ -1,22 +1,36 @@
 import * as Popover from "@radix-ui/react-popover";
-import { LucideCheck, LucideChevronDown, LucidePlus, LucideTrash2 } from "lucide-react";
+import {
+  LucideCheck,
+  LucideChevronDown,
+  LucidePlus,
+  LucideTrash2,
+} from "lucide-react";
 import { useState } from "react";
 import { cn } from "src/lib/utils";
-import { useChat } from "../context/chat-context";
 
-export const ModelPicker = () => {
-  const {
-    selectedModelCode,
-    modelsForMenu,
-    savedModelCodes,
-    savedModelsLoaded,
-    isSavingModel,
-    addModel,
-    selectModel,
-    deleteModel,
-    deletingModelCode,
-  } = useChat();
+type ModelPickerProps = {
+  selectedModelCode: string | null;
+  modelsForMenu: string[];
+  savedModelCodes: string[];
+  savedModelsLoaded: boolean;
+  isSavingModel: boolean;
+  deletingModelCode: string | null;
+  addModel: (modelCode: string) => void;
+  selectModel: (modelCode: string) => void;
+  deleteModel: (modelCode: string) => void;
+};
 
+export const ModelPicker = ({
+  selectedModelCode,
+  modelsForMenu,
+  savedModelCodes,
+  savedModelsLoaded,
+  isSavingModel,
+  deletingModelCode,
+  addModel,
+  selectModel,
+  deleteModel,
+}: ModelPickerProps) => {
   const [modelInput, setModelInput] = useState("");
   const [open, setOpen] = useState(false);
   const label = selectedModelCode ?? "Select model";
@@ -110,12 +124,12 @@ export const ModelPicker = () => {
               <input
                 type="text"
                 value={modelInput}
-                onChange={(e) => setModelInput(e.target.value)}
+                onChange={(event) => setModelInput(event.target.value)}
                 placeholder="openai/gpt-oss-120b"
                 className="flex-1 min-w-0 rounded-lg border border-zinc-200 px-2.5 py-1.5 text-xs outline-none focus:border-zinc-400 transition-colors"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
                     handleAddModel();
                   }
                 }}

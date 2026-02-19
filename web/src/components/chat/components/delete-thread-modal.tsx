@@ -1,10 +1,19 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { useSidebar } from "../context/sidebar-context";
+import type { DeleteModalThread } from "../types";
 
-export const DeleteThreadModal = () => {
-  const { deleteModalThread, isDeleting, onCloseDeleteModal, onConfirmDelete } =
-    useSidebar();
+type DeleteThreadModalProps = {
+  deleteModalThread: DeleteModalThread | null;
+  isDeleting: boolean;
+  onCloseDeleteModal: () => void;
+  onConfirmDelete: () => void;
+};
 
+export const DeleteThreadModal = ({
+  deleteModalThread,
+  isDeleting,
+  onCloseDeleteModal,
+  onConfirmDelete,
+}: DeleteThreadModalProps) => {
   return (
     <Dialog.Root
       open={!!deleteModalThread}
@@ -19,9 +28,8 @@ export const DeleteThreadModal = () => {
             Delete thread?
           </Dialog.Title>
           <Dialog.Description className="mt-2 text-sm text-zinc-600">
-            This permanently deletes{" "}
-            <strong>{deleteModalThread?.title}</strong> and all its messages.
-            This action cannot be undone.
+            This permanently deletes <strong>{deleteModalThread?.title}</strong> and
+            all its messages. This action cannot be undone.
           </Dialog.Description>
           <div className="mt-4 flex items-center justify-end gap-2">
             <button

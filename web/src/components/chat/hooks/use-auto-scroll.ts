@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AUTO_SCROLL_BUFFER_PX } from "../constants";
 
 type UseAutoScrollOptions = {
@@ -59,12 +59,12 @@ export const useAutoScroll = ({ messageCount }: UseAutoScrollOptions) => {
     }
   }, [messageCount]);
 
-  const onSend = () => {
+  const onSend = useCallback(() => {
     const enableAutoScroll = shouldAutoScroll();
     shouldScrollRef.current = enableAutoScroll;
     messageCountAtSendRef.current = messageCount;
     setNeedsScrollSpacer(enableAutoScroll);
-  };
+  }, [messageCount]);
 
   return {
     scrollContainerRef,

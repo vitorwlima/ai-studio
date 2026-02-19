@@ -1,6 +1,6 @@
 import { api } from "@convex/api";
 import { useUser } from "@clerk/clerk-react";
-import { useQuery } from "convex/react";
+import { useAction, useQuery } from "convex/react";
 import {
   LucidePanelLeftClose,
   LucidePanelLeftOpen,
@@ -8,25 +8,30 @@ import {
   LucideSquarePen,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Link } from "react-router";
-import type { ThreadItem } from "../types";
-import { SidebarProvider, useSidebar } from "../context/sidebar-context";
+import { Link, useNavigate, useParams } from "react-router";
 import { DeleteThreadModal } from "./delete-thread-modal";
 import { ThreadList } from "./thread-list";
+import type { DeleteModalThread, ThreadItem } from "../types";
 
 const SidebarPanel = ({
   threadItems,
+  activeThreadId,
+  threadActionError,
+  onRequestDelete,
+  onActionError,
   onCollapse,
 }: {
   threadItems: ThreadItem[];
+  activeThreadId: string | undefined;
+  threadActionError: string | null;
+  onRequestDelete: (thread: DeleteModalThread) => void;
+  onActionError: (message: string | null) => void;
   onCollapse: () => void;
 }) => {
   const { user } = useUser();
-  const { threadActionError } = useSidebar();
 
   return (
     <div className="h-full flex flex-col w-64 gap-1 text-zinc-300">
-      {/* Header */}
       <div className="flex items-center justify-between px-2.5 py-1.5 bg-zinc-900 rounded-xl">
         <div className="flex items-center gap-1">
           <img src="/logo.svg" alt="AI Studio logo" className="size-6" />
@@ -50,20 +55,21 @@ const SidebarPanel = ({
       </div>
 
       <div className="flex flex-col flex-1 bg-zinc-900 rounded-xl h-0">
-        {/* Thread list */}
         <div className="flex flex-col min-h-0 flex-1 px-2 pt-3">
           <div className="text-sm text-zinc-500 tracking-wider font-medium px-2 pb-2">
             Chats
           </div>
           {threadActionError && (
-            <p className="px-2 pb-2 text-xs text-red-400">
-              {threadActionError}
-            </p>
+            <p className="px-2 pb-2 text-xs text-red-400">{threadActionError}</p>
           )}
-          <ThreadList threadItems={threadItems} />
+          <ThreadList
+            threadItems={threadItems}
+            activeThreadId={activeThreadId}
+            onRequestDelete={onRequestDelete}
+            onActionError={onActionError}
+          />
         </div>
 
-        {/* User profile */}
         {user && (
           <div className="flex items-center justify-between border-t border-zinc-800 px-4 py-3">
             <div className="flex items-center gap-2 min-w-0">
@@ -85,27 +91,63 @@ const SidebarPanel = ({
           </div>
         )}
       </div>
-
-      <DeleteThreadModal />
     </div>
   );
 };
 
 export const ChatSidebar = () => {
+  const { threadId } = useParams();
+  const navigate = useNavigate();
   const threads = useQuery(api.threads.list);
+  const deleteThread = useAction(api.threads.deleteThread);
+
   const [isOpen, setIsOpen] = useState(true);
+  const [deleteModalThread, setDeleteModalThread] =
+    useState<DeleteModalThread | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [threadActionError, setThreadActionError] = useState<string | null>(
+    null
+  );
 
   const threadItems = useMemo(
     () => (threads?.page ?? []) as ThreadItem[],
     [threads?.page]
   );
 
+  const onConfirmDelete = async () => {
+    if (!deleteModalThread || isDeleting) return;
+
+    const deletingThreadId = deleteModalThread.threadId;
+    setThreadActionError(null);
+    setIsDeleting(true);
+
+    try {
+      await deleteThread({ threadId: deletingThreadId });
+      setDeleteModalThread(null);
+
+      if (threadId === deletingThreadId) {
+        navigate("/");
+      }
+    } catch {
+      setThreadActionError("Could not delete thread. Try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
-    <SidebarProvider threadItems={threadItems}>
+    <>
       {isOpen ? (
         <div className="shrink-0 p-4">
           <SidebarPanel
             threadItems={threadItems}
+            activeThreadId={threadId}
+            threadActionError={threadActionError}
+            onRequestDelete={(thread) => {
+              setThreadActionError(null);
+              setDeleteModalThread(thread);
+            }}
+            onActionError={setThreadActionError}
             onCollapse={() => setIsOpen(false)}
           />
         </div>
@@ -118,6 +160,17 @@ export const ChatSidebar = () => {
           <LucidePanelLeftOpen className="size-4" />
         </button>
       )}
-    </SidebarProvider>
+
+      <DeleteThreadModal
+        deleteModalThread={deleteModalThread}
+        isDeleting={isDeleting}
+        onCloseDeleteModal={() => {
+          if (!isDeleting) setDeleteModalThread(null);
+        }}
+        onConfirmDelete={() => {
+          void onConfirmDelete();
+        }}
+      />
+    </>
   );
 };

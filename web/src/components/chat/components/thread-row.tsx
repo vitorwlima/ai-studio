@@ -1,13 +1,17 @@
 import { api } from "@convex/api";
 import { useUIMessages } from "@convex-dev/agent/react";
+import { useMutation } from "convex/react";
 import { LucideLoader, LucideTrash2 } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router";
 import { cn } from "src/lib/utils";
-import { useSidebar } from "../context/sidebar-context";
-import type { ThreadItem } from "../types";
+import type { DeleteModalThread, ThreadItem } from "../types";
 
 type ThreadRowProps = {
   thread: ThreadItem;
+  isActive: boolean;
+  onRequestDelete: (thread: DeleteModalThread) => void;
+  onActionError: (message: string | null) => void;
 };
 
 const getDisplayTitle = (title?: string) => {
@@ -15,24 +19,24 @@ const getDisplayTitle = (title?: string) => {
   return trimmed ? trimmed : "New Chat";
 };
 
-export const ThreadRow = ({ thread }: ThreadRowProps) => {
-  const {
-    activeThreadId,
-    editingThreadId,
-    editingTitle,
-    isRenaming,
-    onStartEditing,
-    onEditingTitleChange,
-    onSaveEditing,
-    onCancelEditing,
-    onNavigate,
-    onOpenDeleteModal,
-  } = useSidebar();
-
+export const ThreadRow = ({
+  thread,
+  isActive,
+  onRequestDelete,
+  onActionError,
+}: ThreadRowProps) => {
   const threadId = thread._id;
   const rowTitle = getDisplayTitle(thread.title);
-  const isEditing = editingThreadId === threadId;
-  const isActive = activeThreadId === threadId;
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingTitle, setEditingTitle] = useState(rowTitle);
+  const [isRenaming, setIsRenaming] = useState(false);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  const navigateTimeoutRef = useRef<number | null>(null);
+
+  const navigate = useNavigate();
+  const renameThreadTitle = useMutation(api.threads.renameThreadTitle);
 
   const messagesResult = useUIMessages(
     api.threads.listThreadMessages,
@@ -40,18 +44,19 @@ export const ThreadRow = ({ thread }: ThreadRowProps) => {
     { initialNumItems: 9999, stream: true }
   );
 
-  const isStreaming = messagesResult?.results.some((res) =>
-    res.id.includes("stream:")
+  const isStreaming = messagesResult?.results.some((result) =>
+    result.id.includes("stream:")
   );
-  const inputRef = useRef<HTMLInputElement>(null);
-  const navigateTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (isEditing) {
-      inputRef.current?.focus();
-      inputRef.current?.select();
+    if (!isEditing) {
+      setEditingTitle(rowTitle);
+      return;
     }
-  }, [isEditing]);
+
+    inputRef.current?.focus();
+    inputRef.current?.select();
+  }, [isEditing, rowTitle]);
 
   useEffect(() => {
     return () => {
@@ -65,10 +70,37 @@ export const ThreadRow = ({ thread }: ThreadRowProps) => {
     if (navigateTimeoutRef.current !== null) {
       window.clearTimeout(navigateTimeoutRef.current);
     }
+
     navigateTimeoutRef.current = window.setTimeout(() => {
-      onNavigate(threadId);
+      navigate(`/chat/${threadId}`);
       navigateTimeoutRef.current = null;
     }, 180);
+  };
+
+  const saveEditing = async () => {
+    if (!isEditing || isRenaming) return;
+
+    const normalizedTitle = editingTitle.trim();
+    if (!normalizedTitle || normalizedTitle === rowTitle.trim()) {
+      setIsEditing(false);
+      setEditingTitle(rowTitle);
+      return;
+    }
+
+    onActionError(null);
+    setIsRenaming(true);
+
+    try {
+      await renameThreadTitle({
+        threadId,
+        title: normalizedTitle,
+      });
+      setIsEditing(false);
+    } catch {
+      onActionError("Could not rename thread. Try again.");
+    } finally {
+      setIsRenaming(false);
+    }
   };
 
   return (
@@ -81,24 +113,27 @@ export const ThreadRow = ({ thread }: ThreadRowProps) => {
       {isStreaming && (
         <LucideLoader className="size-3 shrink-0 animate-spin text-zinc-500" />
       )}
+
       {isEditing ? (
         <input
           ref={inputRef}
           type="text"
           value={editingTitle}
-          onChange={(event) => onEditingTitleChange(event.target.value)}
+          onChange={(event) => setEditingTitle(event.target.value)}
           onBlur={() => {
-            void onSaveEditing(thread, rowTitle);
+            void saveEditing();
           }}
           onKeyDown={(event) => {
             if (event.key === "Enter") {
               event.preventDefault();
-              void onSaveEditing(thread, rowTitle);
+              void saveEditing();
               return;
             }
+
             if (event.key === "Escape") {
               event.preventDefault();
-              onCancelEditing();
+              setIsEditing(false);
+              setEditingTitle(rowTitle);
             }
           }}
           disabled={isRenaming}
@@ -114,7 +149,9 @@ export const ThreadRow = ({ thread }: ThreadRowProps) => {
               window.clearTimeout(navigateTimeoutRef.current);
               navigateTimeoutRef.current = null;
             }
-            onStartEditing(threadId, rowTitle);
+            onActionError(null);
+            setIsEditing(true);
+            setEditingTitle(rowTitle);
           }}
           className="min-w-0 flex-1 truncate text-left cursor-pointer"
         >
@@ -127,7 +164,7 @@ export const ThreadRow = ({ thread }: ThreadRowProps) => {
         onClick={(event) => {
           event.preventDefault();
           event.stopPropagation();
-          onOpenDeleteModal({ threadId, title: rowTitle });
+          onRequestDelete({ threadId, title: rowTitle });
         }}
         className={cn(
           "shrink-0 rounded-lg p-1 text-zinc-500 transition cursor-pointer hover:text-red-400",

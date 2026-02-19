@@ -1,10 +1,10 @@
 import { LucideKey, LucideSparkles } from "lucide-react";
 import { Link } from "react-router";
-import { useChat } from "../context/chat-context";
 
 type ChatEmptyStateProps = {
   hasApiKey: boolean | undefined;
   selectedModelCode: string | null;
+  onSuggestionSelect: (suggestion: string) => void;
 };
 
 const suggestions = [
@@ -16,9 +16,8 @@ const suggestions = [
 export const ChatEmptyState = ({
   hasApiKey,
   selectedModelCode,
+  onSuggestionSelect,
 }: ChatEmptyStateProps) => {
-  const { setInput, textareaRef } = useChat();
-
   if (hasApiKey === false) {
     return (
       <div className="h-full flex items-center justify-center">
@@ -27,9 +26,7 @@ export const ChatEmptyState = ({
             <LucideKey className="size-6 text-zinc-400" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-zinc-900">
-              API key required
-            </h2>
+            <h2 className="text-lg font-semibold text-zinc-900">API key required</h2>
             <p className="mt-1 text-sm text-zinc-500">
               Add your OpenRouter API key in settings to start chatting.
             </p>
@@ -68,10 +65,7 @@ export const ChatEmptyState = ({
               <button
                 key={suggestion}
                 type="button"
-                onClick={() => {
-                  setInput(suggestion);
-                  textareaRef.current?.focus();
-                }}
+                onClick={() => onSuggestionSelect(suggestion)}
                 className="text-left text-sm text-zinc-600 border border-zinc-200 hover:border-zinc-300 hover:shadow-sm rounded-xl px-4 py-3 cursor-pointer transition-all"
               >
                 {suggestion}
