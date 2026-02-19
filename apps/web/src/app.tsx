@@ -11,8 +11,8 @@ export const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/sign-in" element={<SignIn />} />
-        <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/sign-in/*" element={<SignIn />} />
+        <Route path="/sign-up/*" element={<SignUp />} />
         <Route element={<AuthLayout />}>
           <Route path="/" element={<Chat />} />
           <Route path="/chat/:threadId" element={<Chat />} />
