@@ -45,4 +45,4 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 ## Extra features
 - [ ] add a button or something to "add SOTA models" that auto-adds latest gpt, claude, etc. (maybe a button to add main open weight models too)
 - [ ] image generation
-
+- [ ] folder separation for the chats
