@@ -47,6 +47,7 @@ export const Chat = () => {
 
       <div className="h-full flex-1 flex flex-col bg-white">
         <ChatContainer
+          key={threadId ?? "new-thread"}
           threadId={threadId}
           hasApiKey={hasApiKey}
           selectedModelCode={selectedModelCode}
