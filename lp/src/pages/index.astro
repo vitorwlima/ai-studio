@@ -1,0 +1,341 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const faqs = [
+  {
+    q: "Why pay $4/month for an open-source project?",
+    a: "The subscription covers hosting, infrastructure, and ongoing development. If you prefer, you can self-host AI Studio for free - the entire codebase is MIT-licensed.",
+  },
+  {
+    q: "How does pricing compare to other platforms?",
+    a: "ChatGPT Plus is $20/mo, Claude Pro is $20/mo, Gemini Advanced is $20/mo. With AI Studio, you pay $4/mo plus only the tokens you use - most users spend $6–10/month total for access to all models.",
+  },
+  {
+    q: "What is OpenRouter?",
+    a: "OpenRouter is a unified API gateway that provides access to 600+ models from every major provider through a single API. AI Studio uses OpenRouter under the hood so you get access to everything.",
+  },
+  {
+    q: "How do I set up my own API key?",
+    a: "You can do that through OpenRouter's website. We explain it in easy steps inside the app.",
+  },
+  {
+    q: "Is my data private?",
+    a: "Your conversations are stored in your account and are never used for model training. When you self-host, you have full control over your data.",
+  },
+];
+
+const providers = [
+  "OpenAI",
+  "Anthropic",
+  "Google",
+  "Meta",
+  "Mistral",
+  "Qwen",
+  "Moonshot",
+  "MiniMax",
+  "Z.ai",
+  "Perplexity",
+  "DeepSeek",
+  "Cohere",
+  "xAI",
+];
+
+const valueProps = [
+  {
+    title: "All providers, one key",
+    description:
+      "Stop juggling subscriptions and API keys. Access every major AI model through a single platform.",
+    icon: `<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />`,
+  },
+  {
+    title: "Pay for what you use",
+    description:
+      "$4/month platform fee, then pay only for the tokens you actually consume. No expensive flat-rate plans.",
+    icon: `<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />`,
+  },
+  {
+    title: "Switch models mid-thought",
+    description:
+      "Start with Kimi for brainstorming, switch to Claude for writing, then Gemini for research - all in one chat.",
+    icon: `<path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />`,
+  },
+];
+---
+
+<Layout>
+  <!-- Nav -->
+  <nav
+    data-nav
+    class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+  >
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <a href="/" class="flex items-center gap-2.5">
+        <svg
+          class="h-7 w-7"
+          viewBox="0 0 80 80"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M53.1956 57.2317C50.7414 53.9009 49.3879 53.1987 47.1683 54.0089C45.3276 54.675 43.9742 56.7095 43.8839 58.9061C43.7937 61.5167 45.5622 64.4694 48.2149 64.8655C50.994 65.2616 54.0257 65.3516 56.7326 64.6855C62.9223 63.1551 67.0729 58.762 70.2309 53.4687C73.7318 47.6173 75.7168 41.2978 75.4462 34.3841C75.4101 33.2319 75.5003 32.0796 75.5725 30.9273C75.5905 30.7473 75.8251 30.5852 76.1139 30.2251C78.3335 32.5297 78.9651 35.4824 79.326 38.3451C80.7336 49.3277 78.7305 59.4822 71.4039 68.1783C65.2142 75.5421 54.3144 78.8549 45.7066 75.9562C40.8883 74.3358 37.1348 71.4551 35.0234 66.72C31.3601 58.51 36.3588 49.5258 45.2735 48.2835C47.7999 47.9234 50.1278 48.5536 52.1128 50.1019C54.5129 51.9384 54.8739 54.2429 53.1956 57.2317Z"
+            fill="#F4F4F5"></path>
+          <path
+            d="M9.92161 29.3609C9.30805 19.2425 12.8811 11.2845 21.6334 6.29734C29.8984 1.5982 38.2536 1.95829 46.2299 7.14354C50.4526 9.88021 53.2497 13.7872 54.3325 18.7744C55.7581 25.364 52.1489 32.3496 45.8509 34.3841C38.5424 36.7427 34.085 32.8898 33.5256 27.3984C33.3632 25.7781 33.5256 24.1937 35.3302 22.9334C35.6009 23.5995 35.8174 24.0676 35.9798 24.5538C36.9904 27.6685 38.7409 28.9288 41.177 28.2807C43.9561 27.5245 45.6524 24.6258 44.8765 21.7811C44.0283 18.6663 41.8989 16.5958 38.9935 15.3895C33.7602 13.229 28.581 13.7511 23.5643 16.1637C18.5475 18.5763 14.5955 22.2132 11.5999 26.8943C11.0765 27.7225 10.481 28.5507 9.92161 29.3609Z"
+            fill="#F4F4F5"></path>
+          <path
+            d="M27.8051 49.9939C27.6788 49.5258 27.5344 49.2917 27.5885 49.1117C28.4547 46.6451 28.581 44.3045 26.2892 42.5041C23.853 40.5596 21.1101 39.9655 18.1505 41.1358C14.3789 42.6121 12.9714 45.6909 12.3217 49.4718C10.9502 57.6097 15.7504 62.4529 21.4349 66.792C23.3477 68.2503 25.6576 69.1865 27.769 70.3748C30.6563 72.0132 33.5437 73.6696 36.6836 75.4701C36.0159 75.9742 35.7633 76.2983 35.4926 76.3163C23.2575 76.7124 12.9172 72.8414 5.69889 62.5609C-0.256246 54.0809 0.862597 42.5221 7.95462 35.9325C13.8195 30.4772 22.4455 29.9731 28.2743 34.7442C31.7752 37.6249 33.2369 42.7561 31.6669 46.5911C30.9451 48.3555 29.8443 49.6698 27.8051 49.9939Z"
+            fill="#F4F4F5"></path>
+          <path
+            d="M55.7942 43.9804C61.9839 34.6002 64.6006 24.8418 58.6454 13.6071C60.0169 14.1652 60.5944 14.2373 60.9373 14.5433C64.7449 18.0542 67.6864 22.1592 69.1842 27.1464C71.3858 34.4922 68.3541 40.5416 61.1538 43.2243C59.656 43.7824 58.068 44.0885 56.5341 44.5026C56.2814 44.3405 56.0468 44.1605 55.7942 43.9804Z"
+            fill="#F4F4F5"></path>
+          <path
+            d="M51.4271 5.14506C54.9641 2.89451 58.5191 2.48041 62.0742 4.89299C63.193 5.64918 63.987 6.65742 63.211 8.07976C62.5975 9.23204 60.8109 9.55612 59.6199 8.31382C57.3461 5.90124 54.5129 5.46913 51.4271 5.14506Z"
+            fill="#F4F4F5"></path>
+          <path
+            d="M2.93786 24.7878C3.40705 26.7683 3.94843 28.7308 4.2913 30.7293C4.52589 32.1516 4.30934 33.664 2.50475 33.844C0.95281 33.988 0.393388 32.6557 0.1227 31.3954C-0.418676 28.7128 0.934765 26.6603 2.16188 24.5718C2.41453 24.6438 2.68521 24.7158 2.93786 24.7878Z"
+            fill="#F4F4F5"></path>
+        </svg>
+        <span class="text-lg font-medium text-white">AI Studio</span>
+      </a>
+      <a
+        href="https://app.aistudio.gg/"
+        class="rounded-full border border-zinc-700 px-5 py-2 text-sm font-medium text-zinc-300 transition-colors hover:border-zinc-500 hover:text-white"
+      >
+        Open App
+      </a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section
+    class="relative flex min-h-screen items-center justify-center overflow-hidden px-6"
+  >
+    <!-- Decorative gradient glow -->
+    <div
+      class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+    >
+      <div
+        class="h-[500px] w-[800px] rounded-full bg-[#d4a574]/[0.07] blur-[120px]"
+      >
+      </div>
+    </div>
+
+    <div class="relative z-10 mx-auto max-w-3xl text-center">
+      <p
+        class="fade-up stagger-1 mb-6 text-xs font-semibold tracking-[0.25em] text-[var(--color-warm)]"
+      >
+        OPEN SOURCE AI CHAT
+      </p>
+      <h1
+        class="fade-up stagger-2 mb-6 font-bold text-5xl leading-tight text-white md:text-7xl lg:text-8xl"
+      >
+        Every model.<br />One app.
+      </h1>
+      <p
+        class="fade-up stagger-3 mx-auto mb-10 max-w-xl text-lg text-zinc-400 md:text-xl"
+      >
+        Access ChatGPT, Claude, Gemini, and more.<br />All in one place, for a
+        fraction of the cost.
+      </p>
+      <div
+        class="fade-up stagger-4 flex flex-col items-center justify-center gap-4 sm:flex-row"
+      >
+        <a
+          href="https://app.aistudio.gg/"
+          class="rounded-full bg-white px-8 py-3 text-sm font-semibold text-zinc-900 transition-colors hover:bg-zinc-200"
+        >
+          Get started
+        </a>
+        <a
+          href="https://github.com/vitorwlima/ai-studio"
+          class="rounded-full border border-zinc-700 px-8 py-3 text-sm font-semibold text-zinc-300 transition-colors hover:border-zinc-500 hover:text-white"
+          target="_blank"
+        >
+          View on GitHub
+        </a>
+      </div>
+      <p class="fade-up stagger-5 mt-6 text-sm text-zinc-500">
+        $4/month + usage
+      </p>
+    </div>
+  </section>
+
+  <!-- Value Proposition -->
+  <section class="px-6 py-24 md:py-32">
+    <div class="mx-auto grid max-w-6xl gap-6 md:grid-cols-3">
+      {
+        valueProps.map((prop, i) => (
+          <div
+            class={`fade-up stagger-${i + 1} rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8`}
+          >
+            <div class="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-zinc-800/80">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="h-5 w-5 text-[var(--color-warm)]"
+              >
+                <Fragment set:html={prop.icon} />
+              </svg>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-white">{prop.title}</h3>
+            <p class="text-sm leading-relaxed text-zinc-400">
+              {prop.description}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Provider Showcase -->
+  <section class="px-6 py-24 md:py-32">
+    <div class="mx-auto max-w-4xl text-center">
+      <h2 class="fade-up mb-4 font-bold text-3xl text-white md:text-5xl">
+        Every major provider.
+      </h2>
+      <div class="fade-up mt-12 flex flex-wrap justify-center gap-3">
+        {
+          providers.map((provider) => (
+            <span class="rounded-full border border-zinc-800 bg-zinc-900/50 px-5 py-2.5 text-sm font-medium text-zinc-300">
+              {provider}
+            </span>
+          ))
+        }
+      </div>
+      <p class="fade-up mt-8 text-sm text-zinc-500">
+        Powered by OpenRouter - 600+ models available
+      </p>
+    </div>
+  </section>
+
+  <!-- Open Source Callout -->
+  <section class="px-6 py-24 md:py-32">
+    <div
+      class="mx-auto max-w-4xl rounded-3xl border border-zinc-800/50 bg-zinc-900/30 p-10 text-center md:p-16"
+    >
+      <p
+        class="fade-up mb-4 text-xs font-semibold tracking-[0.25em] text-[var(--color-warm)]"
+      >
+        OPEN SOURCE
+      </p>
+      <h2 class="fade-up mb-6 font-bold text-3xl text-white md:text-5xl">
+        Built in the open.<br />Fork it, self-host it, make it yours.
+      </h2>
+      <p class="fade-up mx-auto mb-8 max-w-xl text-zinc-400">
+        Fully open source under MIT. Self-host for free or pay $4/month for the
+        hosted version with zero setup.
+      </p>
+      <a
+        href="https://github.com/vitorwlima/ai-studio"
+        class="fade-up inline-flex items-center gap-2 text-sm font-medium text-[var(--color-warm)] transition-colors hover:text-[var(--color-warm-light)]"
+        target="_blank"
+      >
+        Browse the source
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke="currentColor"
+          class="h-4 w-4"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"></path>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="px-6 py-24 md:py-32">
+    <div class="mx-auto grid max-w-6xl gap-12 md:grid-cols-[1fr_2fr] md:gap-16">
+      <div>
+        <h2 class="fade-up font-bold text-3xl text-white md:text-4xl">
+          Frequently<br />asked questions
+        </h2>
+      </div>
+      <div class="space-y-0">
+        {
+          faqs.map((faq, i) => (
+            <details
+              class={`fade-up stagger-${i + 1} group border-b border-zinc-800 py-6 first:pt-0`}
+            >
+              <summary class="flex cursor-pointer list-none items-center justify-between text-left font-medium text-white transition-colors hover:text-zinc-300 [&::-webkit-details-marker]:hidden">
+                {faq.q}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="h-5 w-5 shrink-0 text-zinc-500 transition-transform group-open:rotate-45"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 4.5v15m7.5-7.5h-15"
+                  />
+                </svg>
+              </summary>
+              <p class="mt-4 text-sm leading-relaxed text-zinc-400">{faq.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-zinc-800/50 px-6 py-8">
+    <div class="mx-auto flex max-w-6xl items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <svg
+          class="h-5 w-5"
+          viewBox="0 0 80 80"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M53.1956 57.2317C50.7414 53.9009 49.3879 53.1987 47.1683 54.0089C45.3276 54.675 43.9742 56.7095 43.8839 58.9061C43.7937 61.5167 45.5622 64.4694 48.2149 64.8655C50.994 65.2616 54.0257 65.3516 56.7326 64.6855C62.9223 63.1551 67.0729 58.762 70.2309 53.4687C73.7318 47.6173 75.7168 41.2978 75.4462 34.3841C75.4101 33.2319 75.5003 32.0796 75.5725 30.9273C75.5905 30.7473 75.8251 30.5852 76.1139 30.2251C78.3335 32.5297 78.9651 35.4824 79.326 38.3451C80.7336 49.3277 78.7305 59.4822 71.4039 68.1783C65.2142 75.5421 54.3144 78.8549 45.7066 75.9562C40.8883 74.3358 37.1348 71.4551 35.0234 66.72C31.3601 58.51 36.3588 49.5258 45.2735 48.2835C47.7999 47.9234 50.1278 48.5536 52.1128 50.1019C54.5129 51.9384 54.8739 54.2429 53.1956 57.2317Z"
+            fill="#71717A"></path>
+          <path
+            d="M9.92161 29.3609C9.30805 19.2425 12.8811 11.2845 21.6334 6.29734C29.8984 1.5982 38.2536 1.95829 46.2299 7.14354C50.4526 9.88021 53.2497 13.7872 54.3325 18.7744C55.7581 25.364 52.1489 32.3496 45.8509 34.3841C38.5424 36.7427 34.085 32.8898 33.5256 27.3984C33.3632 25.7781 33.5256 24.1937 35.3302 22.9334C35.6009 23.5995 35.8174 24.0676 35.9798 24.5538C36.9904 27.6685 38.7409 28.9288 41.177 28.2807C43.9561 27.5245 45.6524 24.6258 44.8765 21.7811C44.0283 18.6663 41.8989 16.5958 38.9935 15.3895C33.7602 13.229 28.581 13.7511 23.5643 16.1637C18.5475 18.5763 14.5955 22.2132 11.5999 26.8943C11.0765 27.7225 10.481 28.5507 9.92161 29.3609Z"
+            fill="#71717A"></path>
+          <path
+            d="M27.8051 49.9939C27.6788 49.5258 27.5344 49.2917 27.5885 49.1117C28.4547 46.6451 28.581 44.3045 26.2892 42.5041C23.853 40.5596 21.1101 39.9655 18.1505 41.1358C14.3789 42.6121 12.9714 45.6909 12.3217 49.4718C10.9502 57.6097 15.7504 62.4529 21.4349 66.792C23.3477 68.2503 25.6576 69.1865 27.769 70.3748C30.6563 72.0132 33.5437 73.6696 36.6836 75.4701C36.0159 75.9742 35.7633 76.2983 35.4926 76.3163C23.2575 76.7124 12.9172 72.8414 5.69889 62.5609C-0.256246 54.0809 0.862597 42.5221 7.95462 35.9325C13.8195 30.4772 22.4455 29.9731 28.2743 34.7442C31.7752 37.6249 33.2369 42.7561 31.6669 46.5911C30.9451 48.3555 29.8443 49.6698 27.8051 49.9939Z"
+            fill="#71717A"></path>
+          <path
+            d="M55.7942 43.9804C61.9839 34.6002 64.6006 24.8418 58.6454 13.6071C60.0169 14.1652 60.5944 14.2373 60.9373 14.5433C64.7449 18.0542 67.6864 22.1592 69.1842 27.1464C71.3858 34.4922 68.3541 40.5416 61.1538 43.2243C59.656 43.7824 58.068 44.0885 56.5341 44.5026C56.2814 44.3405 56.0468 44.1605 55.7942 43.9804Z"
+            fill="#71717A"></path>
+          <path
+            d="M51.4271 5.14506C54.9641 2.89451 58.5191 2.48041 62.0742 4.89299C63.193 5.64918 63.987 6.65742 63.211 8.07976C62.5975 9.23204 60.8109 9.55612 59.6199 8.31382C57.3461 5.90124 54.5129 5.46913 51.4271 5.14506Z"
+            fill="#71717A"></path>
+          <path
+            d="M2.93786 24.7878C3.40705 26.7683 3.94843 28.7308 4.2913 30.7293C4.52589 32.1516 4.30934 33.664 2.50475 33.844C0.95281 33.988 0.393388 32.6557 0.1227 31.3954C-0.418676 28.7128 0.934765 26.6603 2.16188 24.5718C2.41453 24.6438 2.68521 24.7158 2.93786 24.7878Z"
+            fill="#71717A"></path>
+        </svg>
+        <span class="text-sm text-zinc-500">AI Studio</span>
+      </a>
+      <div class="flex items-center gap-6">
+        <a
+          href="https://github.com/vitorwlima/ai-studio"
+          class="text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+          target="_blank"
+        >
+          GitHub
+        </a>
+        <a
+          href="https://app.aistudio.gg/"
+          class="text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+        >
+          Open App
+        </a>
+      </div>
+    </div>
+  </footer>
+</Layout>

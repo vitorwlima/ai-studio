@@ -1,0 +1,50 @@
+---
+import "../styles/global.css";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Access ChatGPT, Claude, Gemini, Llama, Mistral and more - all in one place, for a fraction of the cost." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <title>AI Studio - Every AI model, one subscription</title>
+  </head>
+  <body>
+    <slot />
+
+    <script>
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+
+      document.querySelectorAll(".fade-up").forEach((el) => observer.observe(el));
+
+      const nav = document.querySelector("[data-nav]");
+      if (nav) {
+        window.addEventListener("scroll", () => {
+          if (window.scrollY > 20) {
+            nav.classList.add("backdrop-blur-xl", "bg-zinc-950/80", "border-b", "border-zinc-800/50");
+          } else {
+            nav.classList.remove("backdrop-blur-xl", "bg-zinc-950/80", "border-b", "border-zinc-800/50");
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
