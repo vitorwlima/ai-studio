@@ -30,19 +30,22 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 - [x] make sidebar collapsible 18/02/2026
 - [x] rethink/polish whole ui (a lot of work to do still but good enough mvp) 18/02/2026
 
-### Structure
-- [ ] set up proper monorepo to fix convex workarounds. should allow for mobile app and desktop app to reuse the same backend easily.
-- [ ] add better eslint/prettier and tailwind prettier plugin for classnames ordering
-- [ ] update convex agent and ai sdk to v6 when the version is available: https://github.com/get-convex/agent/pull/216
-- [ ] add better env variables management/validation
+### MVP
 - [ ] landing page
 - [ ] implement payment (fixed 4$/month for structure (you can clone and host it for free), plus byok pricing only. goated model)
 - [ ] add agents.md
 - [ ] add license
 - [ ] open source it and post it
-- [ ] browser search tool
+
+### Structure
+- [ ] set up proper monorepo to fix convex workarounds. should allow for mobile app and desktop app to reuse the same backend easily.
+- [ ] add better eslint/prettier and tailwind prettier plugin for classnames ordering
+- [ ] update convex agent and ai sdk to v6 when the version is available: https://github.com/get-convex/agent/pull/216
+- [ ] add better env variables management/validation
 
 ## Extra features
+- [ ] sidebar mobile responsive (and another UX/UI overhaul, for reals now)
+- [ ] browser search tool (most necessary IMO)
 - [ ] file uploads
 - [ ] add a button or something to "add SOTA models" that auto-adds latest gpt, claude, etc. (maybe a button to add main open weight models too)
 - [ ] image generation
