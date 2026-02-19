@@ -1,0 +1,191 @@
+import { api } from "@convex/api";
+import { useMutation, useQuery } from "convex/react";
+import { LucideArrowUp } from "lucide-react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
+import { useNavigate } from "react-router";
+import type { ReasoningEffort, ThreadItem } from "../types";
+import { ModelPicker } from "./model-picker";
+import { ReasoningSelect } from "./reasoning-select";
+
+type ChatComposerProps = {
+  threadId: string | undefined;
+  selectedModelCode: string | null;
+  onSelectedModelChange: (modelCode: string | null) => void;
+  onSend: () => void;
+  onSuggestionHandlerReady: (fn: (suggestion: string) => void) => void;
+};
+
+export const ChatComposer = ({
+  threadId,
+  selectedModelCode,
+  onSelectedModelChange,
+  onSend,
+  onSuggestionHandlerReady,
+}: ChatComposerProps) => {
+  const [selectedReasoningEffort, setSelectedReasoningEffort] = useReducer(
+    (_previous: ReasoningEffort, next: ReasoningEffort) => next,
+    "low" as ReasoningEffort
+  );
+  const [input, setInput] = useState("");
+  const initializedReasoningRef = useRef(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const navigate = useNavigate();
+  const sendMessage = useMutation(api.messages.sendMessage);
+
+  const hasApiKey = useQuery(api.settings.hasApiKey);
+  const threads = useQuery(api.threads.list);
+  const threadItems = useMemo(
+    () => (threads?.page ?? []) as ThreadItem[],
+    [threads?.page]
+  );
+  const activeThread = useMemo(
+    () => threadItems.find((thread) => thread._id === threadId),
+    [threadItems, threadId]
+  );
+
+  const resizeTextarea = useCallback(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }, []);
+
+  useEffect(() => {
+    initializedReasoningRef.current = false;
+  }, [threadId]);
+
+  useEffect(() => {
+    if (initializedReasoningRef.current) return;
+    if (threadId && threads === undefined) return;
+
+    let nextReasoningEffort = selectedReasoningEffort;
+    if (threadId && activeThread?.lastReasoningEffort) {
+      nextReasoningEffort = activeThread.lastReasoningEffort;
+    }
+
+    if (nextReasoningEffort !== selectedReasoningEffort) {
+      setSelectedReasoningEffort(nextReasoningEffort);
+    }
+
+    initializedReasoningRef.current = true;
+  }, [threads, activeThread, selectedReasoningEffort, threadId]);
+
+  const handleSubmit = useCallback(
+    async (e?: FormEvent<HTMLFormElement>) => {
+      e?.preventDefault();
+      if (!input.trim() || !selectedModelCode || hasApiKey !== true) return;
+
+      const message = input;
+      setInput("");
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+      }
+      onSend();
+
+      const result = await sendMessage({
+        prompt: message,
+        threadId,
+        modelCode: selectedModelCode,
+        reasoningEffort: selectedReasoningEffort,
+      });
+
+      if (!threadId && result?.threadId) {
+        navigate(`/chat/${result.threadId}`);
+      }
+    },
+    [
+      input,
+      selectedModelCode,
+      hasApiKey,
+      onSend,
+      sendMessage,
+      threadId,
+      selectedReasoningEffort,
+      navigate,
+    ]
+  );
+
+  const selectSuggestion = useCallback(
+    (suggestion: string) => {
+      setInput(suggestion);
+      textareaRef.current?.focus();
+      resizeTextarea();
+    },
+    [resizeTextarea]
+  );
+
+  useEffect(() => {
+    onSuggestionHandlerReady(selectSuggestion);
+  }, [onSuggestionHandlerReady, selectSuggestion]);
+
+  const inputDisabled = hasApiKey === false;
+  const canSend = !!input.trim() && hasApiKey === true && !!selectedModelCode;
+  const inputPlaceholder =
+    hasApiKey === false
+      ? "Add an API key in settings to start chatting..."
+      : selectedModelCode
+        ? "Your prompt here..."
+        : "Select a model to start chatting...";
+
+  return (
+    <div className="shrink-0 px-4 pb-4 pt-2 relative">
+      <div className="pointer-events-none absolute inset-x-0 -top-8 h-8 bg-gradient-to-t from-white to-transparent" />
+
+      <form
+        onSubmit={(event) => {
+          void handleSubmit(event);
+        }}
+        className="max-w-3xl mx-auto flex flex-col gap-1 rounded-2xl border border-zinc-200 bg-white px-4 py-3 shadow-sm focus-within:border-zinc-300 focus-within:shadow-md transition-all"
+      >
+        <textarea
+          ref={textareaRef}
+          className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-400 resize-none max-h-48 overflow-y-auto disabled:opacity-50"
+          placeholder={inputPlaceholder}
+          rows={1}
+          value={input}
+          disabled={inputDisabled}
+          onChange={(event) => {
+            setInput(event.target.value);
+            resizeTextarea();
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+              event.preventDefault();
+              void handleSubmit();
+            }
+          }}
+        />
+
+        <div className="flex items-center gap-2 pt-1">
+          <ModelPicker
+            threadId={threadId}
+            selectedModelCode={selectedModelCode}
+            onSelectedModelChange={onSelectedModelChange}
+          />
+
+          <ReasoningSelect
+            selectedReasoningEffort={selectedReasoningEffort}
+            onReasoningChange={setSelectedReasoningEffort}
+          />
+
+          <button
+            type="submit"
+            disabled={!canSend}
+            className="shrink-0 ml-auto size-8 flex items-center justify-center rounded-full bg-zinc-800 text-white disabled:opacity-30 cursor-pointer transition-opacity hover:bg-zinc-700"
+          >
+            <LucideArrowUp className="size-4" />
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};

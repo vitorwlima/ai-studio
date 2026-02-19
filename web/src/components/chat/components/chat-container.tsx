@@ -1,3 +1,5 @@
+import { api } from "@convex/api";
+import { useQuery } from "convex/react";
 import { useEffect } from "react";
 import { useAutoScroll } from "../hooks/use-auto-scroll";
 import { useThreadMessages } from "../hooks/use-thread-messages";
@@ -6,7 +8,6 @@ import { MessageList } from "./message-list";
 
 type ChatContainerProps = {
   threadId: string | undefined;
-  hasApiKey: boolean | undefined;
   selectedModelCode: string | null;
   onSuggestionSelect: (suggestion: string) => void;
   onSendReady: (onSend: () => void) => void;
@@ -14,11 +15,11 @@ type ChatContainerProps = {
 
 export const ChatContainer = ({
   threadId,
-  hasApiKey,
   selectedModelCode,
   onSuggestionSelect,
   onSendReady,
 }: ChatContainerProps) => {
+  const hasApiKey = useQuery(api.settings.hasApiKey);
   const { messages, lastUserMessageIndex } = useThreadMessages({ threadId });
 
   const {
