@@ -1,33 +1,48 @@
-import { PricingTable, useAuth } from "@clerk/clerk-react";
-import {
-  SubscriptionDetailsButton,
-  usePlans,
-} from "@clerk/clerk-react/experimental";
-import { LucideCircleCheck, LucideLock } from "lucide-react";
-import { useMemo } from "react";
+import { LucideCircleCheck, LucideLoader2, LucideLock } from "lucide-react";
 import { SettingsLayout } from "./layout";
+import { useAction, useQuery } from "convex/react";
+import { api } from "@convex/api";
+import { useState } from "react";
 
 export const SubscriptionSettings = () => {
-  const { has } = useAuth();
-  const hasProPlan = has?.({ plan: "user:pro" }) ?? false;
-  const plans = usePlans({ for: "user" });
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const userSubscription = useQuery(api.stripe.getUserSubscription);
+  const createSubscriptionCheckout = useAction(
+    api.stripe.createSubscriptionCheckout
+  );
+  const createSubscriptionManagement = useAction(
+    api.stripe.createSubscriptionManagement
+  );
+  const isProUser = userSubscription?.status === "active";
+  const subscriptionEndDate =
+    userSubscription?.cancelAtPeriodEnd && userSubscription?.cancelAt
+      ? new Date(userSubscription.cancelAt * 1000).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
+      : null;
 
-  const pricingAppearance = useMemo(() => {
-    const elements: Record<string, { display: "none" }> = {
-      // Keep free tier hidden even before plans load.
-      pricingTableCard__free: { display: "none" },
-      pricingTableCard__Free: { display: "none" },
-    };
+  const handleRedirectToStripe = async () => {
+    setIsRedirecting(true);
+    try {
+      let url = "";
+      if (isProUser) {
+        const management = await createSubscriptionManagement();
+        url = management.url;
+      } else {
+        const checkout = await createSubscriptionCheckout();
+        url = checkout.url ?? "";
+      }
 
-    for (const plan of plans.data ?? []) {
-      if (plan.fee.amount !== 0) continue;
-      elements[`pricingTableCard__${plan.id}`] = { display: "none" };
-      elements[`pricingTableCard__${plan.slug}`] = { display: "none" };
-      elements[`pricingTableCard__${plan.name}`] = { display: "none" };
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error(error);
+      setIsRedirecting(false);
     }
-
-    return { elements } as const;
-  }, [plans.data]);
+  };
 
   return (
     <SettingsLayout
@@ -36,46 +51,50 @@ export const SubscriptionSettings = () => {
     >
       <div
         className={`rounded-xl border p-4 mb-4 ${
-          hasProPlan
+          isProUser
             ? "border-emerald-200 bg-emerald-50 text-emerald-900"
             : "border-zinc-200 bg-zinc-50 text-zinc-800"
         }`}
       >
         <div className="flex items-center gap-2">
-          {hasProPlan ? (
+          {isProUser ? (
             <LucideCircleCheck className="size-4" />
           ) : (
             <LucideLock className="size-4" />
           )}
           <p className="text-sm font-medium">
-            {hasProPlan
+            {isProUser
               ? "You are on Pro and can use the full app."
               : "Pro subscription is required to use the app."}
           </p>
         </div>
-        <div className="mt-3">
-          <SubscriptionDetailsButton for="user">
-            <button
-              type="button"
-              className="text-xs font-medium bg-white text-zinc-800 border border-zinc-300 px-3 py-1.5 rounded-lg hover:bg-zinc-100 transition-colors cursor-pointer"
-            >
-              Manage plan
-            </button>
-          </SubscriptionDetailsButton>
-        </div>
-        {!hasProPlan && (
-          <p className="text-xs text-zinc-600 mt-2">
-            Subscribe to Pro below to unlock the app.
+        {subscriptionEndDate && (
+          <p className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2.5 py-1.5 inline-block">
+            Your plan will end on{" "}
+            <span className="font-semibold">{subscriptionEndDate}</span>.
           </p>
         )}
-      </div>
-
-      <div className="border border-zinc-200 rounded-xl p-3 bg-white">
-        <PricingTable
-          for="user"
-          newSubscriptionRedirectUrl="/"
-          appearance={pricingAppearance}
-        />
+        <div className="mt-3 flex flex-col gap-1">
+          <button
+            type="button"
+            className="flex items-center gap-2 text-xs font-medium w-fit bg-white text-zinc-800 border border-zinc-300 px-3 py-1.5 rounded-lg hover:bg-zinc-100 transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-default"
+            onClick={handleRedirectToStripe}
+            disabled={isRedirecting}
+          >
+            {isRedirecting && <LucideLoader2 className="size-4 animate-spin" />}
+            {isProUser ? "Manage plan" : "Subscribe to Pro"}
+          </button>
+          {!isProUser && (
+            <span className="text-sm text-zinc-500">
+              <span className="text-lg font-semibold tracking-tight text-zinc-800">
+                $4
+              </span>
+              <span className="text-xs">/month</span>
+              <span className="mx-1.5 text-zinc-300">&middot;</span>
+              <span className="text-xs">cancel anytime</span>
+            </span>
+          )}
+        </div>
       </div>
     </SettingsLayout>
   );
