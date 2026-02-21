@@ -6,7 +6,10 @@ import { Navigate, Outlet, useLocation } from "react-router";
 export const AuthLayout = () => {
   const { isSignedIn, isLoaded } = useAuth();
   const location = useLocation();
-  const userSubscription = useQuery(api.stripe.getUserSubscription);
+  const userSubscription = useQuery(
+    api.stripe.getUserSubscription,
+    isLoaded ? undefined : "skip"
+  );
   const isProUser = userSubscription?.status === "active";
 
   if (!isLoaded) {
