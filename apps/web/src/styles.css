@@ -4,6 +4,10 @@
 @theme {
   --font-sans: "Montserrat Variable", sans-serif;
   --animate-fade-in: fade-in 150ms ease-out;
+  --animate-splash-in: splash-in 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-splash-out: splash-out 400ms cubic-bezier(0.7, 0, 0.84, 0) forwards;
+  --animate-splash-letter: splash-letter 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-splash-shimmer: splash-shimmer 1.5s ease-in-out infinite;
 }
 
 @keyframes fade-in {
@@ -14,6 +18,50 @@
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes splash-letter {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes splash-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes splash-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes splash-shimmer {
+  0%, 100% {
+    background-position: -200% center;
+  }
+  50% {
+    background-position: 200% center;
   }
 }
 
