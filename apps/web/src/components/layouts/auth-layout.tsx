@@ -8,8 +8,9 @@ export const AuthLayout = () => {
   const location = useLocation();
   const userSubscription = useQuery(api.stripe.getUserSubscription);
   const isProUser = userSubscription?.status === "active";
+  const isProLoading = userSubscription === undefined;
 
-  if (!isLoaded) {
+  if (!isLoaded || isProLoading) {
     return null;
   }
 
