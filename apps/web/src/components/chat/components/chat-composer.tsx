@@ -132,14 +132,13 @@ export const ChatComposer = ({
     !!selectedModelCode &&
     !isStreaming &&
     isProUser;
-  const inputPlaceholder =
-    hasApiKey === false
-      ? "Add an API key in settings to start chatting..."
-      : !isProUser
-      ? "Subscription required to send messages..."
-      : selectedModelCode
-      ? "Your prompt here..."
-      : "Select a model to start chatting...";
+  const inputPlaceholder = !isProUser
+    ? "Subscription required to send messages..."
+    : hasApiKey === false
+    ? "Add an API key in settings to start chatting..."
+    : selectedModelCode
+    ? "Your prompt here..."
+    : "Select a model to start chatting...";
 
   return (
     <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-full max-w-3xl px-2 md:px-0">

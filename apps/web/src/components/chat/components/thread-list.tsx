@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import type { DeleteModalThread, ThreadItem } from "../types";
 import { ThreadRow } from "./thread-row";
+import { LucideMessageSquare } from "lucide-react";
 
 type ThreadListProps = {
   threadItems: ThreadItem[];
@@ -57,13 +58,20 @@ export const ThreadList = ({
 }: ThreadListProps) => {
   const groups = useMemo(() => groupThreadsByDate(threadItems), [threadItems]);
 
+  if (threadItems.length === 0) {
+    return (
+      <div className="flex flex-col gap-2 items-center justify-center h-full">
+        <LucideMessageSquare className="size-5 text-zinc-400" />
+        <p className="text-sm text-zinc-400">No chat history yet</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col overflow-y-auto min-h-0 gap-3">
       {groups.map((group) => (
         <div key={group.label}>
-          <div
-            className="text-xs text-zinc-400/80 px-1 tracking-wider mb-1"
-          >
+          <div className="text-xs text-zinc-400/80 px-1 tracking-wider mb-1">
             {group.label}
           </div>
           <div className="flex flex-col gap-0.5">
