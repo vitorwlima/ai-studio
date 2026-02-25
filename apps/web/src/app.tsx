@@ -3,7 +3,9 @@ import { AuthLayout } from "./components/layouts/auth-layout";
 import { Chat } from "./pages/chat";
 import { SignIn } from "./pages/auth/sign-in";
 import { SignUp } from "./pages/auth/sign-up";
+import { AccountSettings } from "./pages/settings/account";
 import { ApiKeySettings } from "./pages/settings/api-key";
+import { ContactSettings } from "./pages/settings/contact";
 import { SubscriptionSettings } from "./pages/settings/subscription";
 import "./styles.css";
 
@@ -18,13 +20,15 @@ export const App = () => {
           <Route path="/chat/:threadId" element={<Chat />} />
           <Route
             path="/settings"
-            element={<Navigate to="/settings/api-key" replace />}
+            element={<Navigate to="/settings/account" replace />}
           />
+          <Route path="/settings/account/*" element={<AccountSettings />} />
           <Route path="/settings/api-key" element={<ApiKeySettings />} />
           <Route
             path="/settings/subscription"
             element={<SubscriptionSettings />}
           />
+          <Route path="/settings/contact" element={<ContactSettings />} />
         </Route>
       </Routes>
     </BrowserRouter>
