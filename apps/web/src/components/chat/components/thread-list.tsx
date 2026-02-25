@@ -62,7 +62,7 @@ export const ThreadList = ({
       {groups.map((group) => (
         <div key={group.label}>
           <div
-            className="text-xs text-zinc-400/80 tracking-wider px-2 pb-1"
+            className="text-xs text-zinc-400/80 px-1 tracking-wider mb-1"
           >
             {group.label}
           </div>

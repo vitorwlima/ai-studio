@@ -27,23 +27,23 @@ const SidebarPanel = ({
   const { user } = useUser();
 
   return (
-    <div className="h-full flex flex-col w-64 gap-1 text-zinc-300">
-      <div className="flex items-center justify-between px-2.5 py-2 bg-zinc-900 rounded-xl">
-        <div className="flex items-center gap-1">
-          <img src="/logo.svg" alt="AI Studio logo" className="size-6" />
+    <div className="h-full flex flex-col w-72 gap-1 text-zinc-300">
+      <div className="flex items-center justify-between p-3 bg-zinc-900 rounded-xl">
+        <div className="flex items-center gap-0.5">
+          <img src="/logo.svg" alt="AI Studio logo" className="size-7" />
           <h1 className="font-medium text-sm text-zinc-200">AI Studio</h1>
         </div>
         <div className="flex items-center">
           <button
             type="button"
             onClick={onCollapse}
-            className="p-1.5 flex items-center justify-center rounded-lg text-zinc-200 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+            className="p-1 flex items-center justify-center rounded-lg text-zinc-200 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
           >
             <LucidePanelLeftClose className="size-4" />
           </button>
           <Link
             to="/"
-            className="p-1.5 flex items-center justify-center rounded-lg text-zinc-200 hover:text-white hover:bg-zinc-800 transition-colors"
+            className="p-1 flex items-center justify-center rounded-lg text-zinc-200 hover:text-white hover:bg-zinc-800 transition-colors"
           >
             <LucideSquarePen className="size-4" />
           </Link>
