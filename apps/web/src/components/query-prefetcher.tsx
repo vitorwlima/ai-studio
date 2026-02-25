@@ -6,6 +6,7 @@ export const QueryPrefetcher = () => {
   useQuery(api.settings.hasApiKey);
   useQuery(api.settings.getMaskedApiKey);
   useQuery(api.models.listUserModels);
+  useQuery(api.stripe.getUserSubscription);
 
   return null;
 };
