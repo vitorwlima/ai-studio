@@ -11,7 +11,6 @@ type ThreadRowProps = {
   thread: ThreadItem;
   isActive: boolean;
   onRequestDelete: (thread: DeleteModalThread) => void;
-  onActionError: (message: string | null) => void;
 };
 
 const getDisplayTitle = (title?: string) => {
@@ -23,7 +22,6 @@ export const ThreadRow = ({
   thread,
   isActive,
   onRequestDelete,
-  onActionError,
 }: ThreadRowProps) => {
   const threadId = thread._id;
   const rowTitle = getDisplayTitle(thread.title);
@@ -65,7 +63,6 @@ export const ThreadRow = ({
       return;
     }
 
-    onActionError(null);
     setIsRenaming(true);
 
     try {
@@ -74,8 +71,8 @@ export const ThreadRow = ({
         title: normalizedTitle,
       });
       setIsEditing(false);
-    } catch {
-      onActionError("Could not rename thread. Try again.");
+    } catch (e) {
+      console.error("Failed to rename thread", e);
     } finally {
       setIsRenaming(false);
     }
@@ -125,7 +122,6 @@ export const ThreadRow = ({
             to={`/chat/${threadId}`}
             onDoubleClick={(event) => {
               event.preventDefault();
-              onActionError(null);
               setIsEditing(true);
               setEditingTitle(rowTitle);
             }}

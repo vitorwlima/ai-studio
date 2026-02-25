@@ -16,16 +16,12 @@ import type { DeleteModalThread, ThreadItem } from "../types";
 const SidebarPanel = ({
   threadItems,
   activeThreadId,
-  threadActionError,
   onRequestDelete,
-  onActionError,
   onCollapse,
 }: {
   threadItems: ThreadItem[];
   activeThreadId: string | undefined;
-  threadActionError: string | null;
   onRequestDelete: (thread: DeleteModalThread) => void;
-  onActionError: (message: string | null) => void;
   onCollapse: () => void;
 }) => {
   const { user } = useUser();
@@ -56,14 +52,10 @@ const SidebarPanel = ({
 
       <div className="flex flex-col flex-1 bg-zinc-900 rounded-xl h-0">
         <div className="flex flex-col min-h-0 flex-1 px-2 py-3">
-          {threadActionError && (
-            <p className="px-2 pb-2 text-xs text-red-400">{threadActionError}</p>
-          )}
           <ThreadList
             threadItems={threadItems}
             activeThreadId={activeThreadId}
             onRequestDelete={onRequestDelete}
-            onActionError={onActionError}
           />
         </div>
 
@@ -102,9 +94,6 @@ export const ChatSidebar = () => {
   const [deleteModalThread, setDeleteModalThread] =
     useState<DeleteModalThread | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [threadActionError, setThreadActionError] = useState<string | null>(
-    null
-  );
 
   const threadItems = useMemo(
     () => (threads?.page ?? []) as ThreadItem[],
@@ -115,7 +104,6 @@ export const ChatSidebar = () => {
     if (!deleteModalThread || isDeleting) return;
 
     const deletingThreadId = deleteModalThread.threadId;
-    setThreadActionError(null);
     setIsDeleting(true);
 
     try {
@@ -125,8 +113,8 @@ export const ChatSidebar = () => {
       if (threadId === deletingThreadId) {
         navigate("/");
       }
-    } catch {
-      setThreadActionError("Could not delete thread. Try again.");
+    } catch (e) {
+      console.error("Failed to delete thread", e);
     } finally {
       setIsDeleting(false);
     }
@@ -139,12 +127,9 @@ export const ChatSidebar = () => {
           <SidebarPanel
             threadItems={threadItems}
             activeThreadId={threadId}
-            threadActionError={threadActionError}
             onRequestDelete={(thread) => {
-              setThreadActionError(null);
               setDeleteModalThread(thread);
             }}
-            onActionError={setThreadActionError}
             onCollapse={() => setIsOpen(false)}
           />
         </div>

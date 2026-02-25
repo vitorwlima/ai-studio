@@ -6,7 +6,6 @@ type ThreadListProps = {
   threadItems: ThreadItem[];
   activeThreadId: string | undefined;
   onRequestDelete: (thread: DeleteModalThread) => void;
-  onActionError: (message: string | null) => void;
 };
 
 type DateGroup = {
@@ -55,7 +54,6 @@ export const ThreadList = ({
   threadItems,
   activeThreadId,
   onRequestDelete,
-  onActionError,
 }: ThreadListProps) => {
   const groups = useMemo(() => groupThreadsByDate(threadItems), [threadItems]);
 
@@ -75,7 +73,6 @@ export const ThreadList = ({
                 thread={thread}
                 isActive={activeThreadId === thread._id}
                 onRequestDelete={onRequestDelete}
-                onActionError={onActionError}
               />
             ))}
           </div>
