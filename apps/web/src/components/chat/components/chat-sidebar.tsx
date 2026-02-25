@@ -2,9 +2,9 @@ import { api } from "@convex/api";
 import { useUser } from "@clerk/clerk-react";
 import { useAction, useQuery } from "convex/react";
 import {
+  LucideArrowRight,
   LucidePanelLeftClose,
   LucidePanelLeftOpen,
-  LucideSettings,
   LucideSquarePen,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -77,7 +77,10 @@ const SidebarPanel = ({
         </div>
 
         {user && (
-          <div className="flex items-center justify-between border-t border-zinc-800 px-4 py-3">
+          <Link
+            to="/settings"
+            className="flex items-center justify-between border-t border-zinc-800 px-4 py-3 hover:bg-zinc-800 transition-colors rounded-b-xl"
+          >
             <div className="flex items-center gap-2 min-w-0">
               <img
                 src={user.imageUrl}
@@ -88,13 +91,8 @@ const SidebarPanel = ({
                 {user.fullName ?? user.primaryEmailAddress?.emailAddress}
               </span>
             </div>
-            <Link
-              to="/settings/api-key"
-              className="p-1.5 flex items-center justify-center rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors shrink-0"
-            >
-              <LucideSettings className="size-4" />
-            </Link>
-          </div>
+            <LucideArrowRight className="size-4" />
+          </Link>
         )}
       </div>
     </div>
@@ -157,9 +155,7 @@ export const ChatSidebar = () => {
       {isMobile && (
         <div
           className={`fixed inset-0 z-40 bg-black/50 transition-opacity duration-200 ${
-            isOpen
-              ? "opacity-100"
-              : "opacity-0 pointer-events-none"
+            isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}
           onClick={closeSidebar}
         />
