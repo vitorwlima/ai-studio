@@ -71,6 +71,7 @@ export const ApiKeySettings = () => {
               value={keyInput}
               onChange={(e) => setKeyInput(e.target.value)}
               placeholder="sk-or-v1-..."
+              autoComplete="off"
               className="w-full text-sm px-3 py-2 border border-zinc-200 rounded-lg outline-none focus:border-zinc-400 transition-colors"
               onKeyDown={(e) => {
                 if (e.key === "Enter") void handleSave();
