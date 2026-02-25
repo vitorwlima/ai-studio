@@ -32,10 +32,10 @@ const SidebarPanel = ({
 
   return (
     <div className="h-full flex flex-col w-64 gap-1 text-zinc-300">
-      <div className="flex items-center justify-between px-2.5 py-1.5 bg-zinc-900 rounded-xl">
+      <div className="flex items-center justify-between px-2.5 py-2 bg-zinc-900 rounded-xl">
         <div className="flex items-center gap-1">
           <img src="/logo.svg" alt="AI Studio logo" className="size-6" />
-          <h1 className="font-semibold text-sm text-zinc-200">AI Studio</h1>
+          <h1 className="font-medium text-sm text-zinc-200">AI Studio</h1>
         </div>
         <div className="flex items-center">
           <button
@@ -152,7 +152,7 @@ export const ChatSidebar = () => {
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="absolute top-1 left-1 z-30 p-3 flex items-center justify-center rounded-xl bg-zinc-900 text-zinc-200 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+          className="absolute top-1 left-1 z-30 p-2 flex items-center justify-center rounded-xl bg-zinc-900 text-zinc-200 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
         >
           <LucidePanelLeftOpen className="size-4" />
         </button>

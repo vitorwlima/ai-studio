@@ -3,7 +3,7 @@ import { useUIMessages } from "@convex-dev/agent/react";
 import { useMutation } from "convex/react";
 import { LucideLoader, LucideTrash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { cn } from "src/lib/utils";
 import type { DeleteModalThread, ThreadItem } from "../types";
 
@@ -33,9 +33,6 @@ export const ThreadRow = ({
   const [isRenaming, setIsRenaming] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const navigateTimeoutRef = useRef<number | null>(null);
-
-  const navigate = useNavigate();
   const renameThreadTitle = useMutation(api.threads.renameThreadTitle);
 
   const messagesResult = useUIMessages(
@@ -57,25 +54,6 @@ export const ThreadRow = ({
     inputRef.current?.focus();
     inputRef.current?.select();
   }, [isEditing, rowTitle]);
-
-  useEffect(() => {
-    return () => {
-      if (navigateTimeoutRef.current !== null) {
-        window.clearTimeout(navigateTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  const scheduleNavigation = () => {
-    if (navigateTimeoutRef.current !== null) {
-      window.clearTimeout(navigateTimeoutRef.current);
-    }
-
-    navigateTimeoutRef.current = window.setTimeout(() => {
-      navigate(`/chat/${threadId}`);
-      navigateTimeoutRef.current = null;
-    }, 180);
-  };
 
   const saveEditing = async () => {
     if (!isEditing || isRenaming) return;
@@ -122,12 +100,12 @@ export const ThreadRow = ({
             value={editingTitle}
             onChange={(event) => setEditingTitle(event.target.value)}
             onBlur={() => {
-              void saveEditing();
+              saveEditing();
             }}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
                 event.preventDefault();
-                void saveEditing();
+                saveEditing();
                 return;
               }
 
@@ -138,32 +116,15 @@ export const ThreadRow = ({
               }
             }}
             disabled={isRenaming}
-            className="min-w-0 flex-1 rounded-md border border-zinc-600 bg-zinc-800 px-2 py-1 text-sm text-white outline-none focus:border-zinc-500 disabled:opacity-50"
+            className="min-w-0 flex-1 text-sm text-white outline-none disabled:opacity-50"
           />
         </>
       ) : (
         <>
           <Link
             to={`/chat/${threadId}`}
-            onClick={(event) => {
-              if (
-                event.button !== 0 ||
-                event.metaKey ||
-                event.altKey ||
-                event.ctrlKey ||
-                event.shiftKey
-              ) {
-                return;
-              }
-              event.preventDefault();
-              scheduleNavigation();
-            }}
             onDoubleClick={(event) => {
               event.preventDefault();
-              if (navigateTimeoutRef.current !== null) {
-                window.clearTimeout(navigateTimeoutRef.current);
-                navigateTimeoutRef.current = null;
-              }
               onActionError(null);
               setIsEditing(true);
               setEditingTitle(rowTitle);
