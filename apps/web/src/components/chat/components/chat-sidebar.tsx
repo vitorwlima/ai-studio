@@ -55,7 +55,7 @@ const SidebarPanel = ({
       </div>
 
       <div className="flex flex-col flex-1 bg-zinc-900 rounded-xl h-0">
-        <div className="flex flex-col min-h-0 flex-1 px-2 pt-3">
+        <div className="flex flex-col min-h-0 flex-1 px-2 py-3">
           {threadActionError && (
             <p className="px-2 pb-2 text-xs text-red-400">{threadActionError}</p>
           )}

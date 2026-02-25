@@ -60,13 +60,11 @@ export const ThreadList = ({
   const groups = useMemo(() => groupThreadsByDate(threadItems), [threadItems]);
 
   return (
-    <div className="flex flex-col overflow-y-auto min-h-0">
-      {groups.map((group, groupIndex) => (
-        <div key={group.label} className="mb-2">
+    <div className="flex flex-col overflow-y-auto min-h-0 gap-3">
+      {groups.map((group) => (
+        <div key={group.label}>
           <div
-            className={`text-xs text-zinc-500 tracking-wider px-2 pb-1 ${
-              groupIndex > 0 ? "pt-3" : ""
-            }`}
+            className="text-xs text-zinc-400/80 tracking-wider px-2 pb-1"
           >
             {group.label}
           </div>
