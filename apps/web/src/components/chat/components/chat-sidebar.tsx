@@ -137,7 +137,7 @@ export const ChatSidebar = () => {
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="absolute top-2 left-2 z-30 p-2 flex items-center justify-center rounded-xl bg-zinc-900 text-zinc-200 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+          className="absolute top-3 left-3 z-30 p-2 flex items-center justify-center rounded-lg bg-zinc-900 text-zinc-200 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
         >
           <LucidePanelLeftOpen className="size-4" />
         </button>
