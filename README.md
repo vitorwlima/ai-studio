@@ -34,10 +34,10 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 - [x] landing page 19/02/2026
 - [x] implement payment (fixed 4$/month for structure (you can clone and host it for free), plus byok pricing only. goated model) 19/02/2026 (fixed on 21/02/2026 -> moved to stripe with convex component as clerk billing doesn't work on brazil.)
 - [x] set up prod 21/02/2026
-- [x] improve settings and user management (can not logout yet lol)
-- [ ] add agents.md
+- [x] improve settings and user management (can not logout yet lol) 24/02/2026
+- [ ] add agents.md (maybe not necessary after some research papers saying its usually bad lol. would have to study a bit and actually think through what to write in there)
 - [ ] add license
-- [ ] open source it and post it
+- [ ] open source it and post it (add better docs)
 
 ### Structure
 - [x] set up proper monorepo to fix convex workarounds. should allow for mobile app and desktop app to reuse the same backend easily. 19/02/2026
@@ -46,8 +46,9 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 - [ ] add better env variables management/validation
 
 ## Extra features
-- [x] sidebar mobile responsive (and another UX/UI overhaul, for reals now)
-- [ ] better pay wall (let user see whole website, just cant send message)
+- [x] sidebar mobile responsive (and another UX/UI overhaul, for reals now) 24/02/2026
+- [x] better pay wall (let user see whole website, just cant send message) 24/02/2026
+- [ ] better ui for reasoning box
 - [ ] browser search tool (most necessary IMO)
 - [ ] file uploads
 - [ ] add a button or something to "add SOTA models" that auto-adds latest gpt, claude, etc. (maybe a button to add main open weight models too)
