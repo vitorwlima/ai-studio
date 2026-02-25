@@ -151,16 +151,16 @@ export const ChatComposer = ({
         : "Select a model to start chatting...";
 
   return (
-    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-full max-w-3xl">
+    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-full max-w-3xl">
       <form
         onSubmit={handleSubmit}
-        className="max-w-3xl mx-auto flex flex-col gap-1 rounded-2xl bg-zinc-900 px-4 py-3 transition-all"
+        className="max-w-3xl mx-auto flex flex-col gap-1 rounded-2xl bg-zinc-900/95 px-4 py-3 transition-all"
       >
         <textarea
           ref={textareaRef}
           className="w-full bg-transparent text-sm text-zinc-100 outline-none placeholder:text-zinc-400/75 resize-none max-h-48 overflow-y-auto disabled:opacity-50"
           placeholder={inputPlaceholder}
-          rows={1}
+          rows={2}
           value={input}
           disabled={inputDisabled}
           onChange={(event) => {

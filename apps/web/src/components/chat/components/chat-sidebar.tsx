@@ -31,7 +31,7 @@ const SidebarPanel = ({
   const { user } = useUser();
 
   return (
-    <div className="h-full flex flex-col w-64 gap-2 text-zinc-300">
+    <div className="h-full flex flex-col w-64 gap-1 text-zinc-300">
       <div className="flex items-center justify-between px-2.5 py-1.5 bg-zinc-900 rounded-xl">
         <div className="flex items-center gap-1">
           <img src="/logo.svg" alt="AI Studio logo" className="size-6" />
@@ -135,7 +135,7 @@ export const ChatSidebar = () => {
   return (
     <>
       {isOpen ? (
-        <div className="shrink-0 p-2">
+        <div className="shrink-0 p-1">
           <SidebarPanel
             threadItems={threadItems}
             activeThreadId={threadId}
@@ -152,7 +152,7 @@ export const ChatSidebar = () => {
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="absolute top-2 left-2 z-30 p-3 flex items-center justify-center rounded-xl bg-zinc-900 text-zinc-200 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+          className="absolute top-1 left-1 z-30 p-3 flex items-center justify-center rounded-xl bg-zinc-900 text-zinc-200 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
         >
           <LucidePanelLeftOpen className="size-4" />
         </button>
