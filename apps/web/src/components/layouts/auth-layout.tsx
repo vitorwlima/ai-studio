@@ -2,6 +2,7 @@ import { useAuth } from "@clerk/clerk-react";
 import { api } from "@convex/api";
 import { useQuery } from "convex/react";
 import { Navigate, Outlet, useLocation } from "react-router";
+import { QueryPrefetcher } from "../query-prefetcher";
 import { SplashScreen } from "../splash-screen";
 
 export const AuthLayout = () => {
@@ -29,5 +30,10 @@ export const AuthLayout = () => {
     return <Outlet />;
   };
 
-  return <SplashScreen ready={isReady}>{renderContent()}</SplashScreen>;
+  return (
+    <SplashScreen ready={isReady}>
+      <QueryPrefetcher />
+      {renderContent()}
+    </SplashScreen>
+  );
 };
