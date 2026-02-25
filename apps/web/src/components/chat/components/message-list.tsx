@@ -18,7 +18,7 @@ export const MessageList = ({
   needsScrollSpacer,
 }: MessageListProps) => {
   return (
-    <div ref={scrollContentRef} className="max-w-3xl mx-auto flex flex-col gap-5 py-6">
+    <div ref={scrollContentRef} className="max-w-3xl mx-auto flex flex-col gap-5 py-2">
       {messages.map((message, index) => {
         const isLastUserMessage =
           message.role === "user" && index === lastUserMessageIndex;

@@ -151,13 +151,11 @@ export const ChatComposer = ({
         : "Select a model to start chatting...";
 
   return (
-    <div className="shrink-0 px-4 pb-4 pt-2 relative">
-      <div className="pointer-events-none absolute inset-x-0 -top-8 h-8 bg-gradient-to-t from-white to-transparent" />
+    <div className="shrink-0 p-2 relative">
+      <div className="pointer-events-none absolute inset-x-0 -top-8 h-8 bg-linear-to-t from-white to-transparent" />
 
       <form
-        onSubmit={(event) => {
-          void handleSubmit(event);
-        }}
+        onSubmit={handleSubmit}
         className="max-w-3xl mx-auto flex flex-col gap-1 rounded-2xl border border-zinc-200 bg-white px-4 py-3 shadow-sm focus-within:border-zinc-300 focus-within:shadow-md transition-all"
       >
         <textarea
