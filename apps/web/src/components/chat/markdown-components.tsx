@@ -3,20 +3,6 @@ import type { Components } from "react-markdown";
 import { CodeBlock } from "./components/code-block";
 
 export const markdownComponents: Components = {
-  p: ({ children }: { children?: ReactNode }) => (
-    <p className="whitespace-pre-wrap wrap-break-word">{children}</p>
-  ),
-  a: ({ href, children }: { href?: string; children?: ReactNode }) => (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer noopener"
-      className="text-blue-600 hover:text-blue-800 underline underline-offset-2"
-    >
-      {children}
-    </a>
-  ),
-  pre: ({ children }: { children?: ReactNode }) => <>{children}</>,
   code: ({
     className,
     children,
@@ -38,26 +24,42 @@ export const markdownComponents: Components = {
       </code>
     );
   },
-  h1: ({ children }: { children?: ReactNode }) => (
-    <h1 className="text-2xl font-bold mt-6 mb-3">{children}</h1>
+  h1: ({ children }) => <h1 className="mb-5 text-3xl font-bold">{children}</h1>,
+  h2: ({ children }) => <h2 className="mb-4 text-2xl font-bold">{children}</h2>,
+  h3: ({ children }) => <h3 className="mb-3 text-xl font-bold">{children}</h3>,
+  h4: ({ children }) => <h4 className="mb-2 text-lg font-bold">{children}</h4>,
+  p: ({ children }) => (
+    <p className="leading-relaxed not-last:mb-5">{children}</p>
   ),
-  h2: ({ children }: { children?: ReactNode }) => (
-    <h2 className="text-xl font-semibold mt-5 mb-2">{children}</h2>
+  ul: ({ children }) => (
+    <ul className="mb-4 list-disc pl-6 marker:text-xl marker:text-emerald-500">
+      {children}
+    </ul>
   ),
-  h3: ({ children }: { children?: ReactNode }) => (
-    <h3 className="text-lg font-semibold mt-4 mb-2">{children}</h3>
+  ol: ({ children }) => (
+    <ol className="mb-4 list-decimal pl-6 marker:text-emerald-500">
+      {children}
+    </ol>
   ),
-  ul: ({ children }: { children?: ReactNode }) => (
-    <ul className="list-disc pl-6 space-y-1">{children}</ul>
-  ),
-  ol: ({ children }: { children?: ReactNode }) => (
-    <ol className="list-decimal pl-6 space-y-1">{children}</ol>
-  ),
-  blockquote: ({ children }: { children?: ReactNode }) => (
-    <blockquote className="border-l-4 border-zinc-300 pl-4 italic text-zinc-600">
+  li: ({ children }) => <li className="mb-3 pl-2">{children}</li>,
+  blockquote: ({ children }) => (
+    <blockquote className="mb-4 border-l-4 border-emerald-500 pl-4 italic">
       {children}
     </blockquote>
   ),
+  a: ({ children, href }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className="text-emerald-500 underline hover:text-emerald-400"
+    >
+      {children}
+    </a>
+  ),
+  strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+  em: ({ children }) => <em className="italic">{children}</em>,
+  hr: () => <hr className="my-8 border-t border-emerald-500" />,
   table: ({ children }: { children?: ReactNode }) => (
     <div className="overflow-x-auto rounded-lg border border-zinc-400">
       <table className="min-w-full border-separate border-spacing-0 text-sm">
@@ -75,5 +77,4 @@ export const markdownComponents: Components = {
       {children}
     </td>
   ),
-  hr: () => <hr className="my-4 border-zinc-200" />,
 };
