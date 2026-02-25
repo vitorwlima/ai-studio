@@ -20,7 +20,7 @@ export const ReasoningSelect = ({
 }: ReasoningSelectProps) => {
   return (
     <Select.Root value={selectedReasoningEffort} onValueChange={onReasoningChange}>
-      <Select.Trigger className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors cursor-pointer outline-none">
+      <Select.Trigger className="flex items-center gap-1.5 rounded-lg px-1.5 py-1.5 text-xs text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors cursor-pointer outline-none">
         <Select.Value>Reasoning: {selectedReasoningEffort}</Select.Value>
         <Select.Icon>
           <LucideChevronDown className="size-3 text-zinc-500" />

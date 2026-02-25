@@ -158,7 +158,7 @@ export const ChatComposer = ({
       >
         <textarea
           ref={textareaRef}
-          className="w-full bg-transparent text-sm text-zinc-100 outline-none placeholder:text-zinc-500 resize-none max-h-48 overflow-y-auto disabled:opacity-50"
+          className="w-full bg-transparent text-sm text-zinc-100 outline-none placeholder:text-zinc-400/75 resize-none max-h-48 overflow-y-auto disabled:opacity-50"
           placeholder={inputPlaceholder}
           rows={1}
           value={input}
@@ -175,7 +175,7 @@ export const ChatComposer = ({
           }}
         />
 
-        <div className="flex items-center gap-2 pt-1">
+        <div className="flex items-center gap-1.5 pt-1">
           <ModelPicker
             threadId={threadId}
             selectedModelCode={selectedModelCode}
@@ -190,7 +190,7 @@ export const ChatComposer = ({
           <button
             type="submit"
             disabled={!canSend}
-            className="shrink-0 ml-auto size-8 flex items-center justify-center rounded-full bg-zinc-100 text-zinc-900 disabled:opacity-20 cursor-pointer transition-colors hover:bg-white"
+            className="shrink-0 ml-auto size-8 flex items-center justify-center rounded-full bg-zinc-100 text-zinc-900 disabled:opacity-40 disabled:cursor-default cursor-pointer transition-colors hover:bg-white"
           >
             <LucideArrowUp className="size-4" />
           </button>
