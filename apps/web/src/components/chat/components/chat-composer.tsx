@@ -40,6 +40,8 @@ export const ChatComposer = ({
   const sendMessage = useMutation(api.messages.sendMessage);
 
   const hasApiKey = useQuery(api.settings.hasApiKey);
+  const userSubscription = useQuery(api.stripe.getUserSubscription);
+  const isProUser = userSubscription?.status === "active";
   const { isStreaming } = useThreadMessages({ threadId });
   const threads = useQuery(api.threads.list);
   const threadItems = useMemo(
@@ -85,7 +87,8 @@ export const ChatComposer = ({
         !input.trim() ||
         !selectedModelCode ||
         hasApiKey !== true ||
-        isStreaming
+        isStreaming ||
+        !isProUser
       ) {
         return;
       }
@@ -118,15 +121,22 @@ export const ChatComposer = ({
       threadId,
       selectedReasoningEffort,
       navigate,
+      isProUser,
     ]
   );
 
   const inputDisabled = hasApiKey === false;
   const canSend =
-    !!input.trim() && hasApiKey === true && !!selectedModelCode && !isStreaming;
+    !!input.trim() &&
+    hasApiKey === true &&
+    !!selectedModelCode &&
+    !isStreaming &&
+    isProUser;
   const inputPlaceholder =
     hasApiKey === false
       ? "Add an API key in settings to start chatting..."
+      : !isProUser
+      ? "Subscription required to send messages..."
       : selectedModelCode
       ? "Your prompt here..."
       : "Select a model to start chatting...";
