@@ -7,11 +7,28 @@ import {
   LucideSettings,
   LucideSquarePen,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { DeleteThreadModal } from "./delete-thread-modal";
 import { ThreadList } from "./thread-list";
 import type { DeleteModalThread, ThreadItem } from "../types";
+
+const MOBILE_BREAKPOINT = 768;
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(
+    () => window.innerWidth < MOBILE_BREAKPOINT
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  return isMobile;
+}
 
 const SidebarPanel = ({
   threadItems,
@@ -89,11 +106,25 @@ export const ChatSidebar = () => {
   const navigate = useNavigate();
   const threads = useQuery(api.threads.list);
   const deleteThread = useAction(api.threads.deleteThread);
+  const isMobile = useIsMobile();
 
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(!isMobile);
   const [deleteModalThread, setDeleteModalThread] =
     useState<DeleteModalThread | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Close sidebar when switching to mobile
+  const prevIsMobile = useRef(isMobile);
+  useEffect(() => {
+    if (isMobile && !prevIsMobile.current) {
+      setIsOpen(false);
+    } else if (!isMobile && prevIsMobile.current) {
+      setIsOpen(true);
+    }
+    prevIsMobile.current = isMobile;
+  }, [isMobile]);
+
+  const closeSidebar = useCallback(() => setIsOpen(false), []);
 
   const threadItems = useMemo(
     () => (threads?.page ?? []) as ThreadItem[],
@@ -122,26 +153,66 @@ export const ChatSidebar = () => {
 
   return (
     <>
-      {isOpen ? (
-        <div className="shrink-0 p-1">
+      {/* Backdrop for mobile */}
+      {isMobile && (
+        <div
+          className={`fixed inset-0 z-40 bg-black/50 transition-opacity duration-200 ${
+            isOpen
+              ? "opacity-100"
+              : "opacity-0 pointer-events-none"
+          }`}
+          onClick={closeSidebar}
+        />
+      )}
+
+      {/* Sidebar */}
+      {isMobile ? (
+        <div
+          className={`fixed top-0 left-0 z-50 h-full p-1 transition-transform duration-200 ease-out ${
+            isOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
           <SidebarPanel
             threadItems={threadItems}
             activeThreadId={threadId}
             onRequestDelete={(thread) => {
               setDeleteModalThread(thread);
             }}
-            onCollapse={() => setIsOpen(false)}
+            onCollapse={closeSidebar}
           />
         </div>
       ) : (
-        <button
-          type="button"
-          onClick={() => setIsOpen(true)}
-          className="absolute top-3 left-3 z-30 p-2 flex items-center justify-center rounded-lg bg-zinc-900 text-zinc-200 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+        <div
+          className="shrink-0 transition-[width,padding,opacity] duration-200 ease-out overflow-hidden"
+          style={{
+            width: isOpen ? "calc(18rem + 0.5rem)" : "0",
+            padding: isOpen ? "0.25rem" : "0",
+            opacity: isOpen ? 1 : 0,
+          }}
         >
-          <LucidePanelLeftOpen className="size-4" />
-        </button>
+          <SidebarPanel
+            threadItems={threadItems}
+            activeThreadId={threadId}
+            onRequestDelete={(thread) => {
+              setDeleteModalThread(thread);
+            }}
+            onCollapse={closeSidebar}
+          />
+        </div>
       )}
+
+      {/* Open button */}
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        className={`absolute top-3 left-3 z-30 p-2 flex items-center justify-center rounded-lg bg-zinc-900 text-zinc-200 hover:text-white hover:bg-zinc-800 transition-all duration-200 cursor-pointer ${
+          isOpen
+            ? "opacity-0 scale-75 pointer-events-none"
+            : "opacity-100 scale-100"
+        }`}
+      >
+        <LucidePanelLeftOpen className="size-4" />
+      </button>
 
       <DeleteThreadModal
         deleteModalThread={deleteModalThread}

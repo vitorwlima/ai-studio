@@ -37,7 +37,7 @@ export const ChatContainer = ({
   const showEmptyState = !threadId && messages.length === 0;
 
   return (
-    <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-1 pb-32">
+    <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-2 pb-32 md:px-1">
       {showEmptyState && (
         <ChatEmptyState
           hasApiKey={hasApiKey}

@@ -46,7 +46,7 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 - [ ] add better env variables management/validation
 
 ## Extra features
-- [ ] sidebar mobile responsive (and another UX/UI overhaul, for reals now)
+- [x] sidebar mobile responsive (and another UX/UI overhaul, for reals now)
 - [ ] better pay wall (let user see whole website, just cant send message)
 - [ ] browser search tool (most necessary IMO)
 - [ ] file uploads

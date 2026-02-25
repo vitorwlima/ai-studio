@@ -151,7 +151,7 @@ export const ChatComposer = ({
         : "Select a model to start chatting...";
 
   return (
-    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-full max-w-3xl">
+    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-full max-w-3xl px-2 md:px-0">
       <form
         onSubmit={handleSubmit}
         className="max-w-3xl mx-auto flex flex-col gap-1 rounded-2xl bg-zinc-900/95 px-4 py-3 transition-all"
