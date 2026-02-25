@@ -72,7 +72,7 @@ export const AuthLayout = () => {
 
   useEffect(() => {
     if (splashTimerDone && isReady) {
-      tryExit();
+      requestAnimationFrame(tryExit);
     }
   }, [splashTimerDone, isReady, tryExit]);
 
