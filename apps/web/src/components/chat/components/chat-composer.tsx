@@ -171,9 +171,10 @@ export const ChatComposer = ({
           <button
             type="submit"
             disabled={!canSend}
-            className="shrink-0 ml-auto size-8 flex items-center justify-center rounded-full bg-zinc-100 text-zinc-900 disabled:opacity-40 disabled:cursor-default cursor-pointer transition-colors hover:bg-white"
+            aria-label="Send message"
+            className="shrink-0 ml-auto size-9 flex items-center justify-center rounded-full border border-white/30 bg-linear-to-br from-zinc-50 to-zinc-200 text-zinc-900 shadow-[0_8px_22px_-12px_rgba(255,255,255,0.95)] transition-all duration-200 enabled:cursor-pointer enabled:hover:from-white enabled:hover:to-zinc-100 enabled:hover:shadow-[0_12px_30px_-14px_rgba(255,255,255,1)] enabled:active:translate-y-0 enabled:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900 disabled:cursor-not-allowed disabled:border-zinc-700 disabled:bg-zinc-800 disabled:text-zinc-500 disabled:shadow-none"
           >
-            <LucideArrowUp className="size-4" />
+            <LucideArrowUp className="size-4.5" strokeWidth={2.25} />
           </button>
         </div>
       </form>
