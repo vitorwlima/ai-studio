@@ -8,7 +8,6 @@ import {
   useReducer,
   useRef,
   useState,
-  type FormEvent,
 } from "react";
 import { useNavigate } from "react-router";
 import { useThreadMessages } from "../hooks/use-thread-messages";
@@ -21,7 +20,6 @@ type ChatComposerProps = {
   selectedModelCode: string | null;
   onSelectedModelChange: (modelCode: string | null) => void;
   onSend: () => void;
-  onSuggestionHandlerReady: (fn: (suggestion: string) => void) => void;
 };
 
 export const ChatComposer = ({
@@ -29,7 +27,6 @@ export const ChatComposer = ({
   selectedModelCode,
   onSelectedModelChange,
   onSend,
-  onSuggestionHandlerReady,
 }: ChatComposerProps) => {
   const [selectedReasoningEffort, setSelectedReasoningEffort] = useReducer(
     (_previous: ReasoningEffort, next: ReasoningEffort) => next,
@@ -82,7 +79,7 @@ export const ChatComposer = ({
   }, [threads, activeThread, selectedReasoningEffort, threadId]);
 
   const handleSubmit = useCallback(
-    async (e?: FormEvent<HTMLFormElement>) => {
+    async (e?: React.SubmitEvent<HTMLFormElement>) => {
       e?.preventDefault();
       if (
         !input.trim() ||
@@ -124,31 +121,15 @@ export const ChatComposer = ({
     ]
   );
 
-  const selectSuggestion = useCallback(
-    (suggestion: string) => {
-      setInput(suggestion);
-      textareaRef.current?.focus();
-      resizeTextarea();
-    },
-    [resizeTextarea]
-  );
-
-  useEffect(() => {
-    onSuggestionHandlerReady(selectSuggestion);
-  }, [onSuggestionHandlerReady, selectSuggestion]);
-
   const inputDisabled = hasApiKey === false;
   const canSend =
-    !!input.trim() &&
-    hasApiKey === true &&
-    !!selectedModelCode &&
-    !isStreaming;
+    !!input.trim() && hasApiKey === true && !!selectedModelCode && !isStreaming;
   const inputPlaceholder =
     hasApiKey === false
       ? "Add an API key in settings to start chatting..."
       : selectedModelCode
-        ? "Your prompt here..."
-        : "Select a model to start chatting...";
+      ? "Your prompt here..."
+      : "Select a model to start chatting...";
 
   return (
     <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-full max-w-3xl px-2 md:px-0">

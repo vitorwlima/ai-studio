@@ -9,9 +9,6 @@ export const Chat = () => {
   const { threadId } = useParams<{ threadId: string | undefined }>();
   const threads = useQuery(api.threads.list);
   const [onSend, setOnSend] = useState<() => void>(() => () => {});
-  const [selectSuggestion, setSelectSuggestion] = useState<
-    (suggestion: string) => void
-  >(() => () => {});
   const [selectedModelCode, setSelectedModelCode] = useState<string | null>(
     null
   );
@@ -40,13 +37,6 @@ export const Chat = () => {
     setOnSend(() => nextOnSend);
   }, []);
 
-  const onSuggestionHandlerReady = useCallback(
-    (nextSelectSuggestion: (suggestion: string) => void) => {
-      setSelectSuggestion(() => nextSelectSuggestion);
-    },
-    []
-  );
-
   return (
     <main className="h-dvh flex relative">
       <ChatSidebar />
@@ -56,7 +46,6 @@ export const Chat = () => {
           key={threadId ?? "new-thread"}
           threadId={threadId}
           selectedModelCode={selectedModelCode}
-          onSuggestionSelect={selectSuggestion}
           onSendReady={onSendReady}
         />
 
@@ -65,7 +54,6 @@ export const Chat = () => {
           selectedModelCode={selectedModelCode}
           onSelectedModelChange={setSelectedModelCode}
           onSend={onSend}
-          onSuggestionHandlerReady={onSuggestionHandlerReady}
         />
       </div>
     </main>

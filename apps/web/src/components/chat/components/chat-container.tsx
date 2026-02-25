@@ -9,14 +9,12 @@ import { MessageList } from "./message-list";
 type ChatContainerProps = {
   threadId: string | undefined;
   selectedModelCode: string | null;
-  onSuggestionSelect: (suggestion: string) => void;
   onSendReady: (onSend: () => void) => void;
 };
 
 export const ChatContainer = ({
   threadId,
   selectedModelCode,
-  onSuggestionSelect,
   onSendReady,
 }: ChatContainerProps) => {
   const hasApiKey = useQuery(api.settings.hasApiKey);
@@ -42,7 +40,6 @@ export const ChatContainer = ({
         <ChatEmptyState
           hasApiKey={hasApiKey}
           selectedModelCode={selectedModelCode}
-          onSuggestionSelect={onSuggestionSelect}
         />
       )}
       <MessageList
