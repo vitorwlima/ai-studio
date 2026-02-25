@@ -18,6 +18,8 @@ export const ChatContainer = ({
   onSendReady,
 }: ChatContainerProps) => {
   const hasApiKey = useQuery(api.settings.hasApiKey);
+  const userSubscription = useQuery(api.stripe.getUserSubscription);
+  const isProUser = userSubscription?.status === "active";
   const { messages, lastUserMessageIndex } = useThreadMessages({ threadId });
 
   const {
@@ -40,6 +42,7 @@ export const ChatContainer = ({
         <ChatEmptyState
           hasApiKey={hasApiKey}
           selectedModelCode={selectedModelCode}
+          isProUser={isProUser}
         />
       )}
       <MessageList

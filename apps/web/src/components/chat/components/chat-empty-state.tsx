@@ -1,14 +1,45 @@
 import { useUser } from "@clerk/clerk-react";
-import { LucideKey } from "lucide-react";
+import { LucideKey, LucideLock } from "lucide-react";
 import { Link } from "react-router";
 
 type Props = {
   hasApiKey: boolean | undefined;
   selectedModelCode: string | null;
+  isProUser: boolean;
 };
 
-export const ChatEmptyState = ({ hasApiKey, selectedModelCode }: Props) => {
+export const ChatEmptyState = ({
+  hasApiKey,
+  selectedModelCode,
+  isProUser,
+}: Props) => {
   const { user } = useUser();
+
+  if (!isProUser) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4 text-center max-w-sm">
+          <div className="size-12 rounded-full bg-zinc-100 flex items-center justify-center">
+            <LucideLock className="size-6 text-zinc-400" />
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-zinc-900">
+              Pro subscription required
+            </h2>
+            <p className="mt-1 text-sm text-zinc-500">
+              Subscribe to Pro in settings to start chatting.
+            </p>
+          </div>
+          <Link
+            to="/settings/subscription"
+            className="text-sm bg-zinc-900 text-white px-5 py-2 rounded-lg hover:bg-zinc-800 transition-colors"
+          >
+            Go to settings
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (hasApiKey === false) {
     return (
@@ -31,6 +62,14 @@ export const ChatEmptyState = ({ hasApiKey, selectedModelCode }: Props) => {
           >
             Go to settings
           </Link>
+          {!isProUser && (
+            <Link
+              to="/settings/subscription"
+              className="text-sm text-zinc-700 underline underline-offset-4 hover:text-zinc-900 transition-colors"
+            >
+              Upgrade to Pro
+            </Link>
+          )}
         </div>
       </div>
     );
