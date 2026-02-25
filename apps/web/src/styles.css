@@ -66,5 +66,5 @@
 }
 
 body {
-  @apply bg-white text-zinc-900;
+  @apply bg-zinc-200 text-zinc-900;
 }

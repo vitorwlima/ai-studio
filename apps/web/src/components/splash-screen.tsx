@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { cn } from "src/lib/utils";
 
 const SPLASH_DURATION_MS = 1200;
 const EXIT_DURATION_MS = 400;
@@ -8,7 +9,10 @@ const SplashOverlay = ({ exiting }: { exiting: boolean }) => {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-white ${exiting ? "animate-splash-out" : ""}`}
+      className={cn(
+        "fixed inset-0 z-50 flex items-center justify-center bg-zinc-200",
+        exiting && "animate-splash-out"
+      )}
       style={exiting ? { pointerEvents: "none" } : undefined}
     >
       <div className="flex items-baseline gap-[2px] select-none">

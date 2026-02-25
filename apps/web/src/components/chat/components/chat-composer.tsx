@@ -151,16 +151,14 @@ export const ChatComposer = ({
         : "Select a model to start chatting...";
 
   return (
-    <div className="shrink-0 p-2 relative">
-      <div className="pointer-events-none absolute inset-x-0 -top-8 h-8 bg-linear-to-t from-white to-transparent" />
-
+    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-full max-w-3xl">
       <form
         onSubmit={handleSubmit}
-        className="max-w-3xl mx-auto flex flex-col gap-1 rounded-2xl border border-zinc-200 bg-white px-4 py-3 shadow-sm focus-within:border-zinc-300 focus-within:shadow-md transition-all"
+        className="max-w-3xl mx-auto flex flex-col gap-1 rounded-2xl bg-zinc-900 px-4 py-3 transition-all"
       >
         <textarea
           ref={textareaRef}
-          className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-400 resize-none max-h-48 overflow-y-auto disabled:opacity-50"
+          className="w-full bg-transparent text-sm text-zinc-100 outline-none placeholder:text-zinc-500 resize-none max-h-48 overflow-y-auto disabled:opacity-50"
           placeholder={inputPlaceholder}
           rows={1}
           value={input}
@@ -192,7 +190,7 @@ export const ChatComposer = ({
           <button
             type="submit"
             disabled={!canSend}
-            className="shrink-0 ml-auto size-8 flex items-center justify-center rounded-full bg-zinc-800 text-white disabled:opacity-30 cursor-pointer transition-opacity hover:bg-zinc-700"
+            className="shrink-0 ml-auto size-8 flex items-center justify-center rounded-full bg-zinc-100 text-zinc-900 disabled:opacity-20 cursor-pointer transition-colors hover:bg-white"
           >
             <LucideArrowUp className="size-4" />
           </button>

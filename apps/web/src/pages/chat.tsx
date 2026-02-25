@@ -51,7 +51,7 @@ export const Chat = () => {
     <main className="h-dvh flex relative">
       <ChatSidebar />
 
-      <div className="h-full flex-1 flex flex-col bg-white">
+      <div className="h-full flex-1 flex flex-col bg-zinc-200 relative">
         <ChatContainer
           key={threadId ?? "new-thread"}
           threadId={threadId}

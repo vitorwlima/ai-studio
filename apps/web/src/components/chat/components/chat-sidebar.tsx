@@ -31,7 +31,7 @@ const SidebarPanel = ({
   const { user } = useUser();
 
   return (
-    <div className="h-full flex flex-col w-64 gap-0.5 text-zinc-300">
+    <div className="h-full flex flex-col w-64 gap-2 text-zinc-300">
       <div className="flex items-center justify-between px-2.5 py-1.5 bg-zinc-900 rounded-xl">
         <div className="flex items-center gap-1">
           <img src="/logo.svg" alt="AI Studio logo" className="size-6" />

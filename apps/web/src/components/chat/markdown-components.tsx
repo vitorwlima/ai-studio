@@ -4,7 +4,7 @@ import { CodeBlock } from "./components/code-block";
 
 export const markdownComponents: Components = {
   p: ({ children }: { children?: ReactNode }) => (
-    <p className="whitespace-pre-wrap break-words">{children}</p>
+    <p className="whitespace-pre-wrap wrap-break-word">{children}</p>
   ),
   a: ({ href, children }: { href?: string; children?: ReactNode }) => (
     <a
@@ -59,19 +59,21 @@ export const markdownComponents: Components = {
     </blockquote>
   ),
   table: ({ children }: { children?: ReactNode }) => (
-    <div className="overflow-x-auto">
-      <table className="min-w-full border-collapse border border-zinc-200 text-sm">
+    <div className="overflow-x-auto rounded-lg border border-zinc-400">
+      <table className="min-w-full border-separate border-spacing-0 text-sm">
         {children}
       </table>
     </div>
   ),
   th: ({ children }: { children?: ReactNode }) => (
-    <th className="border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-left font-medium">
+    <th className="border-b border-r border-zinc-400 bg-zinc-200 px-3 py-1.5 text-left font-medium last:border-r-0">
       {children}
     </th>
   ),
   td: ({ children }: { children?: ReactNode }) => (
-    <td className="border border-zinc-200 px-3 py-1.5">{children}</td>
+    <td className="border-b border-r border-zinc-400 px-3 py-1.5 last:border-r-0 [tbody_tr:last-child_&]:border-b-0">
+      {children}
+    </td>
   ),
   hr: () => <hr className="my-4 border-zinc-200" />,
 };
