@@ -35,8 +35,8 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 - [x] implement payment (fixed 4$/month for structure (you can clone and host it for free), plus byok pricing only. goated model) 19/02/2026 (fixed on 21/02/2026 -> moved to stripe with convex component as clerk billing doesn't work on brazil.)
 - [x] set up prod 21/02/2026
 - [x] improve settings and user management (can not logout yet lol) 24/02/2026
-- [ ] add agents.md (maybe not necessary after some research papers saying its usually bad lol. would have to study a bit and actually think through what to write in there)
-- [ ] add license
+- [x] add agents.md (maybe not necessary after some research papers saying its usually bad lol. would have to study a bit and actually think through what to write in there) 26/02/2026 -> skipping for now
+- [x] add license 26/02/2026
 - [ ] open source it and post it (add better docs)
 
 ### Structure
