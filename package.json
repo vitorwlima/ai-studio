@@ -1,6 +1,7 @@
 {
   "name": "ai-studio",
   "private": true,
+  "license": "MIT",
   "packageManager": "pnpm@10.24.0",
   "scripts": {
     "dev": "turbo run dev --filter=@ai-studio/backend --filter=@ai-studio/web",

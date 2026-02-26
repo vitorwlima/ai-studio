@@ -10,7 +10,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@convex-dev/agent": "^0.3.2",
     "@convex-dev/stripe": "^0.1.3",
