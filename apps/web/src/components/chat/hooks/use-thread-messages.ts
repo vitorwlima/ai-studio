@@ -13,10 +13,17 @@ export const useThreadMessages = ({ threadId }: UseThreadMessagesOptions) => {
     { initialNumItems: 9999, stream: true }
   );
 
+  if (!threadId) {
+    return {
+      messages: [],
+      lastUserMessageIndex: -1,
+      isStreaming: false,
+    }
+  }
+
   const messages = (messagesResult?.results ?? []) as ChatMessage[];
   const isStreaming = messages.some(
-    (message) =>
-      message.status === "streaming" || message.id.startsWith("stream:")
+    (message) => message.status === "streaming"
   );
 
   const lastUserMessageIndex = messages.reduce(

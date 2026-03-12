@@ -13,7 +13,15 @@ export type ChatMessage = {
     | "finished"
     | "aborted";
   error?: string;
-  parts: Array<{ type: string; text?: string }>;
+  parts: Array<{
+    type: string;
+    toolName?: string;
+    toolCallId?: string;
+    state?: string;
+    input?: Record<string, unknown>;
+    output?: Record<string, unknown>;
+    text?: string;
+  }>;
   modelCode?: string;
   reasoningEffort?: ReasoningEffort;
 };

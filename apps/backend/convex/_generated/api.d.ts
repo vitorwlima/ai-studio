@@ -13,6 +13,7 @@ import type * as lib_agent from "../lib/agent.js";
 import type * as lib_crypto from "../lib/crypto.js";
 import type * as lib_openrouter from "../lib/openrouter.js";
 import type * as lib_reasoning from "../lib/reasoning.js";
+import type * as lib_tools from "../lib/tools.js";
 import type * as messages from "../messages.js";
 import type * as models from "../models.js";
 import type * as settings from "../settings.js";
@@ -31,6 +32,7 @@ declare const fullApi: ApiFromModules<{
   "lib/crypto": typeof lib_crypto;
   "lib/openrouter": typeof lib_openrouter;
   "lib/reasoning": typeof lib_reasoning;
+  "lib/tools": typeof lib_tools;
   messages: typeof messages;
   models: typeof models;
   settings: typeof settings;

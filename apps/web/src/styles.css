@@ -4,6 +4,7 @@
 @theme {
   --font-sans: "Montserrat Variable", sans-serif;
   --animate-fade-in: fade-in 150ms ease-out;
+  --animate-fade-out: fade-out 100ms ease-in;
   --animate-splash-in: splash-in 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
   --animate-splash-out: splash-out 400ms cubic-bezier(0.7, 0, 0.84, 0) forwards;
   --animate-splash-letter: splash-letter 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -18,6 +19,17 @@
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.97) translateY(4px);
   }
 }
 

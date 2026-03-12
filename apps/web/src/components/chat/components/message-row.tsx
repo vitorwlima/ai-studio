@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { markdownComponents } from "../markdown-components";
 import type { ChatMessage } from "../types";
+import { WebSearchSources } from "./web-search-part";
 
 type MessageRowProps = {
   message: ChatMessage;
@@ -86,6 +87,8 @@ export const MessageRow = ({
             <span className="inline-block w-1.5 h-4 bg-zinc-400 rounded-sm animate-pulse" />
           )}
         </div>
+
+        <WebSearchSources parts={message.parts} />
 
         {(message.error || message.status === "failed") && (
           <p className="mt-2 whitespace-pre-wrap break-words rounded-md border border-red-200 bg-red-50 px-2 py-1 text-xs text-red-700">
