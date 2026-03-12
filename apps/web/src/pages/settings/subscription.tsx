@@ -55,7 +55,7 @@ export const SubscriptionSettings = () => {
           <LucideInfo className="size-4 mt-0.5 shrink-0" />
           <p className="text-sm">
             <span className="font-medium">Subscription is currently free for everyone.</span>{" "}
-            You don't need to worry about this tab at all — it may change in the future.
+            You don't need to worry about this tab at all. It may change in the future.
           </p>
         </div>
       )}
