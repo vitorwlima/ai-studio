@@ -41,7 +41,7 @@ export const SettingsLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex min-h-dvh">
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex w-56 flex-col bg-zinc-900 text-zinc-300">
+      <aside className="hidden md:flex w-72 flex-col bg-zinc-900 text-zinc-300">
         <div className="p-4">
           <Link
             to="/"
