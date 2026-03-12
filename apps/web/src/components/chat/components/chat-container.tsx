@@ -1,6 +1,7 @@
 import { api } from "@convex/api";
 import { useQuery } from "convex/react";
 import { useEffect } from "react";
+import { IS_PAYWALL_ENABLED } from "src/lib/paywall";
 import { useAutoScroll } from "../hooks/use-auto-scroll";
 import { useThreadMessages } from "../hooks/use-thread-messages";
 import { ChatEmptyState } from "./chat-empty-state";
@@ -19,7 +20,7 @@ export const ChatContainer = ({
 }: ChatContainerProps) => {
   const hasApiKey = useQuery(api.settings.hasApiKey);
   const userSubscription = useQuery(api.stripe.getUserSubscription);
-  const isProUser = userSubscription?.status === "active";
+  const isProUser = !IS_PAYWALL_ENABLED || userSubscription?.status === "active";
   const { messages, lastUserMessageIndex } = useThreadMessages({ threadId });
 
   const {

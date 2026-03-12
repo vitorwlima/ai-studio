@@ -1,6 +1,7 @@
 import { api } from "@convex/api";
 import { useMutation, useQuery } from "convex/react";
 import { LucideArrowUp } from "lucide-react";
+import { IS_PAYWALL_ENABLED } from "src/lib/paywall";
 import {
   useCallback,
   useEffect,
@@ -41,7 +42,7 @@ export const ChatComposer = ({
 
   const hasApiKey = useQuery(api.settings.hasApiKey);
   const userSubscription = useQuery(api.stripe.getUserSubscription);
-  const isProUser = userSubscription?.status === "active";
+  const isProUser = !IS_PAYWALL_ENABLED || userSubscription?.status === "active";
   const { isStreaming } = useThreadMessages({ threadId });
   const threads = useQuery(api.threads.list);
   const threadItems = useMemo(

@@ -1,6 +1,7 @@
 import { useUser } from "@clerk/clerk-react";
 import { LucideKey, LucideLock } from "lucide-react";
 import { Link } from "react-router";
+import { IS_PAYWALL_ENABLED } from "src/lib/paywall";
 
 type Props = {
   hasApiKey: boolean | undefined;
@@ -62,7 +63,7 @@ export const ChatEmptyState = ({
           >
             Go to settings
           </Link>
-          {!isProUser && (
+          {IS_PAYWALL_ENABLED && !isProUser && (
             <Link
               to="/settings/subscription"
               className="text-sm text-zinc-700 underline underline-offset-4 hover:text-zinc-900 transition-colors"

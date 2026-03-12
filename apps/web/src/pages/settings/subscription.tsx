@@ -1,8 +1,9 @@
-import { LucideCircleCheck, LucideLoader2, LucideLock } from "lucide-react";
+import { LucideCircleCheck, LucideInfo, LucideLoader2, LucideLock } from "lucide-react";
 import { SettingsLayout } from "./layout";
 import { useAction, useQuery } from "convex/react";
 import { api } from "@convex/api";
 import { useState } from "react";
+import { IS_PAYWALL_ENABLED } from "src/lib/paywall";
 
 export const SubscriptionSettings = () => {
   const [isRedirecting, setIsRedirecting] = useState(false);
@@ -49,6 +50,15 @@ export const SubscriptionSettings = () => {
       title="Settings"
       description="Manage your subscription and billing."
     >
+      {!IS_PAYWALL_ENABLED && (
+        <div className="flex items-start gap-2.5 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 mb-4 text-blue-800">
+          <LucideInfo className="size-4 mt-0.5 shrink-0" />
+          <p className="text-sm">
+            <span className="font-medium">Subscription is currently free for everyone.</span>{" "}
+            You don't need to worry about this tab at all — it may change in the future.
+          </p>
+        </div>
+      )}
       <div
         className={`rounded-xl border p-4 mb-4 ${
           isProUser
