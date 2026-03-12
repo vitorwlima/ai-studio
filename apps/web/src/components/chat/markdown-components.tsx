@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { Components } from "react-markdown";
 import { CodeBlock } from "./components/code-block";
+import { MarkdownTable } from "./components/markdown-table";
 
 export const markdownComponents: Components = {
   code: ({
@@ -61,19 +62,15 @@ export const markdownComponents: Components = {
   em: ({ children }) => <em className="italic">{children}</em>,
   hr: () => <hr className="my-8 border-t border-emerald-500" />,
   table: ({ children }: { children?: ReactNode }) => (
-    <div className="overflow-x-auto rounded-lg border border-zinc-400">
-      <table className="min-w-full border-separate border-spacing-0 text-sm">
-        {children}
-      </table>
-    </div>
+    <MarkdownTable>{children}</MarkdownTable>
   ),
   th: ({ children }: { children?: ReactNode }) => (
-    <th className="border-b border-r border-zinc-400 bg-zinc-200 px-3 py-1.5 text-left font-medium last:border-r-0">
+    <th className="border-b border-zinc-200 bg-zinc-150 px-4 py-2.5 text-left text-[13px] font-semibold text-zinc-700 tracking-wide">
       {children}
     </th>
   ),
   td: ({ children }: { children?: ReactNode }) => (
-    <td className="border-b border-r border-zinc-400 px-3 py-1.5 last:border-r-0 [tbody_tr:last-child_&]:border-b-0">
+    <td className="border-b border-zinc-200/60 px-4 py-2.5 text-[13px] text-zinc-600 [tr:nth-child(even)_&]:bg-zinc-50/50 [tbody_tr:last-child_&]:border-b-0">
       {children}
     </td>
   ),
