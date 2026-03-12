@@ -127,8 +127,8 @@ export const MessageRow = ({
                 )}
                 <button
                   type="button"
-                  onClick={() => void handleCopyMessage()}
-                  className="rounded-md p-1 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors cursor-pointer"
+                  onClick={() => handleCopyMessage()}
+                  className="rounded-md p-1 text-zinc-400 hover:text-zinc-600 transition-colors cursor-pointer"
                 >
                   {copied ? (
                     <Check className="size-3.5 text-emerald-500" />
