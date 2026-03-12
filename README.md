@@ -44,6 +44,7 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 - [ ] add better eslint/prettier and tailwind prettier plugin for classnames ordering
 - [ ] update convex agent and ai sdk to v6 when the version is available: https://github.com/get-convex/agent/pull/216
 - [ ] add better env variables management/validation
+- [ ] automate convex deploy to prod on push to main or vercel build or actions or something (gotta run pnpx convex deploy at the backend folder for now)
 
 ## Extra features
 - [x] sidebar mobile responsive (and another UX/UI overhaul, for reals now) 24/02/2026
