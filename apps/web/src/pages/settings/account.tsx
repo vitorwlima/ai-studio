@@ -3,10 +3,7 @@ import { SettingsLayout } from "./layout";
 
 export const AccountSettings = () => {
   return (
-    <SettingsLayout
-      title="Settings"
-      description="Manage your account details and preferences."
-    >
+    <SettingsLayout>
       <div className="flex justify-center">
         <UserProfile routing="path" path="/settings/account" />
       </div>

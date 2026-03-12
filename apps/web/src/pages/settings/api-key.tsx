@@ -1,7 +1,14 @@
 import { api } from "@convex/api";
 import { useAction, useMutation, useQuery } from "convex/react";
-import { LucideExternalLink, LucideKey, LucideTrash2 } from "lucide-react";
+import {
+  LucideCheck,
+  LucideExternalLink,
+  LucideKey,
+  LucidePencil,
+  LucideTrash2,
+} from "lucide-react";
 import { useState } from "react";
+import { cn } from "src/lib/utils";
 import { SettingsLayout } from "./layout";
 
 export const ApiKeySettings = () => {
@@ -34,85 +41,107 @@ export const ApiKeySettings = () => {
   };
 
   return (
-    <SettingsLayout
-      title="Settings"
-      description="Configure your OpenRouter API key."
-    >
-      <div className="border border-zinc-200 rounded-xl p-5">
-        <div className="flex items-center gap-2 mb-4">
-          <LucideKey className="size-4 text-zinc-500" />
-          <h2 className="font-medium text-zinc-900">OpenRouter API Key</h2>
+    <SettingsLayout>
+      <h1 className="text-xl font-semibold text-zinc-900">API Key</h1>
+      <p className="mt-1 text-sm text-zinc-500">
+        Connect your own OpenRouter key for model access.
+      </p>
+
+      <div className="mt-6 rounded-xl bg-white shadow-sm">
+        <div className="flex items-center gap-2.5 border-b border-zinc-100 px-5 py-4">
+          <div className="flex size-8 items-center justify-center rounded-lg bg-zinc-100">
+            <LucideKey className="size-4 text-zinc-600" />
+          </div>
+          <div>
+            <h2 className="text-sm font-medium text-zinc-900">
+              OpenRouter API Key
+            </h2>
+            <p className="text-xs text-zinc-500">
+              Used to authenticate requests to AI models
+            </p>
+          </div>
         </div>
 
-        {hasKey && !isEditing ? (
-          <div className="flex items-center justify-between">
-            <code className="text-sm text-zinc-500 bg-zinc-100 px-2 py-1 rounded">
-              {maskedKey}
-            </code>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setIsEditing(true)}
-                className="text-sm text-zinc-600 hover:text-zinc-900 cursor-pointer transition-colors px-3 py-1.5 rounded-lg hover:bg-zinc-100"
-              >
-                Change
-              </button>
-              <button
-                onClick={handleRemove}
-                className="text-sm text-red-600 hover:text-red-700 cursor-pointer transition-colors p-1.5 rounded-lg hover:bg-red-50"
-              >
-                <LucideTrash2 className="size-4" />
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-3">
-            <input
-              type="password"
-              value={keyInput}
-              onChange={(e) => setKeyInput(e.target.value)}
-              placeholder="sk-or-v1-..."
-              autoComplete="off"
-              className="w-full text-sm px-3 py-2 border border-zinc-200 rounded-lg outline-none focus:border-zinc-400 transition-colors"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") void handleSave();
-              }}
-              autoFocus
-            />
-            <div className="flex items-center justify-between">
-              <a
-                href="https://openrouter.ai/keys"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-zinc-500 hover:text-zinc-700 flex items-center gap-1 transition-colors"
-              >
-                Get a key at openrouter.ai
-                <LucideExternalLink className="size-3" />
-              </a>
+        <div className="p-5">
+          {hasKey && !isEditing ? (
+            <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                {hasKey && (
-                  <button
-                    onClick={() => {
-                      setIsEditing(false);
-                      setKeyInput("");
-                    }}
-                    className="text-sm text-zinc-500 hover:text-zinc-700 cursor-pointer transition-colors px-3 py-1.5 rounded-lg hover:bg-zinc-100"
-                  >
-                    Cancel
-                  </button>
-                )}
+                <LucideCheck className="size-3.5 text-emerald-600" />
+                <code className="rounded-md bg-zinc-100 px-2.5 py-1 text-sm text-zinc-600">
+                  {maskedKey}
+                </code>
+              </div>
+              <div className="flex items-center gap-1">
                 <button
-                  onClick={() => {
-                    void handleSave();
-                  }}
-                  disabled={!keyInput.trim() || isSaving}
-                  className="text-sm bg-zinc-800 text-white px-4 py-1.5 rounded-lg disabled:opacity-30 cursor-pointer hover:bg-zinc-700 transition-colors"
+                  onClick={() => setIsEditing(true)}
+                  className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 cursor-pointer"
                 >
-                  {isSaving ? "Saving..." : "Save"}
+                  <LucidePencil className="size-3.5" />
+                  Change
+                </button>
+                <button
+                  onClick={handleRemove}
+                  className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-600 cursor-pointer"
+                >
+                  <LucideTrash2 className="size-4" />
                 </button>
               </div>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="flex flex-col gap-3">
+              <div className="relative">
+                <input
+                  type="password"
+                  value={keyInput}
+                  onChange={(e) => setKeyInput(e.target.value)}
+                  placeholder="sk-or-v1-..."
+                  autoComplete="off"
+                  className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2.5 text-sm outline-none transition-colors focus:border-zinc-400 focus:bg-white"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") void handleSave();
+                  }}
+                  autoFocus
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <a
+                  href="https://openrouter.ai/keys"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-sm text-zinc-500 transition-colors hover:text-zinc-700"
+                >
+                  Get a key at openrouter.ai
+                  <LucideExternalLink className="size-3" />
+                </a>
+                <div className="flex items-center gap-2">
+                  {hasKey && (
+                    <button
+                      onClick={() => {
+                        setIsEditing(false);
+                        setKeyInput("");
+                      }}
+                      className="rounded-lg px-3 py-1.5 text-sm text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700 cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      void handleSave();
+                    }}
+                    disabled={!keyInput.trim() || isSaving}
+                    className={cn(
+                      "rounded-lg bg-zinc-900 px-4 py-1.5 text-sm text-white transition-colors cursor-pointer",
+                      "hover:bg-zinc-800 disabled:opacity-30 disabled:cursor-default"
+                    )}
+                  >
+                    {isSaving ? "Saving..." : "Save key"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </SettingsLayout>
   );

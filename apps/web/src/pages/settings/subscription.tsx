@@ -1,9 +1,16 @@
-import { LucideCircleCheck, LucideInfo, LucideLoader2, LucideLock } from "lucide-react";
+import {
+  LucideCircleCheck,
+  LucideInfo,
+  LucideLoader2,
+  LucideLock,
+  LucideSparkles,
+} from "lucide-react";
 import { SettingsLayout } from "./layout";
 import { useAction, useQuery } from "convex/react";
 import { api } from "@convex/api";
 import { useState } from "react";
 import { IS_PAYWALL_ENABLED } from "src/lib/paywall";
+import { cn } from "src/lib/utils";
 
 export const SubscriptionSettings = () => {
   const [isRedirecting, setIsRedirecting] = useState(false);
@@ -46,64 +53,96 @@ export const SubscriptionSettings = () => {
   };
 
   return (
-    <SettingsLayout
-      title="Settings"
-      description="Manage your subscription and billing."
-    >
-      {!IS_PAYWALL_ENABLED && (
-        <div className="flex items-start gap-2.5 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 mb-4 text-blue-800">
-          <LucideInfo className="size-4 mt-0.5 shrink-0" />
-          <p className="text-sm">
-            <span className="font-medium">Subscription is currently free for everyone.</span>{" "}
-            You don't need to worry about this tab at all. It may change in the future.
-          </p>
-        </div>
-      )}
-      <div
-        className={`rounded-xl border p-4 mb-4 ${
-          isProUser
-            ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-            : "border-zinc-200 bg-zinc-50 text-zinc-800"
-        }`}
-      >
-        <div className="flex items-center gap-2">
-          {isProUser ? (
-            <LucideCircleCheck className="size-4" />
-          ) : (
-            <LucideLock className="size-4" />
-          )}
-          <p className="text-sm font-medium">
-            {isProUser
-              ? "You are on Pro and can use the full app."
-              : "Pro subscription is required to use the app."}
-          </p>
-        </div>
-        {subscriptionEndDate && (
-          <p className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2.5 py-1.5 inline-block">
-            Your plan will end on{" "}
-            <span className="font-semibold">{subscriptionEndDate}</span>.
-          </p>
+    <SettingsLayout>
+      <h1 className="text-xl font-semibold text-zinc-900">Subscription</h1>
+      <p className="mt-1 text-sm text-zinc-500">
+        Manage your plan and billing.
+      </p>
+
+      <div className="mt-6 space-y-4">
+        {!IS_PAYWALL_ENABLED && (
+          <div className="flex items-start gap-2.5 rounded-xl bg-blue-50 px-4 py-3 text-blue-800 shadow-sm">
+            <LucideInfo className="mt-0.5 size-4 shrink-0" />
+            <p className="text-sm">
+              <span className="font-medium">
+                Subscription is currently free for everyone.
+              </span>{" "}
+              You don't need to worry about this page at all. It may change in
+              the future.
+            </p>
+          </div>
         )}
-        <div className="mt-3 flex flex-col gap-1">
-          <button
-            type="button"
-            className="flex items-center gap-2 text-xs font-medium w-fit bg-white text-zinc-800 border border-zinc-300 px-3 py-1.5 rounded-lg hover:bg-zinc-100 transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-default"
-            onClick={handleRedirectToStripe}
-            disabled={isRedirecting}
-          >
-            {isRedirecting && <LucideLoader2 className="size-4 animate-spin" />}
-            {isProUser ? "Manage plan" : "Subscribe to Pro"}
-          </button>
-          {!isProUser && (
-            <span className="text-sm text-zinc-500">
-              <span className="text-lg font-semibold tracking-tight text-zinc-800">
-                $4
-              </span>
-              <span className="text-xs">/month</span>
-              <span className="mx-1.5 text-zinc-300">&middot;</span>
-              <span className="text-xs">cancel anytime</span>
-            </span>
+
+        <div
+          className={cn(
+            "rounded-xl shadow-sm p-5",
+            isProUser ? "bg-emerald-50 text-emerald-900" : "bg-white text-zinc-800"
           )}
+        >
+          <div className="flex items-center gap-2.5">
+            {isProUser ? (
+              <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-100">
+                <LucideCircleCheck className="size-4 text-emerald-700" />
+              </div>
+            ) : (
+              <div className="flex size-8 items-center justify-center rounded-lg bg-zinc-100">
+                <LucideLock className="size-4 text-zinc-500" />
+              </div>
+            )}
+            <div>
+              <p className="text-sm font-medium">
+                {isProUser ? "Pro plan" : "No active plan"}
+              </p>
+              <p
+                className={cn(
+                  "text-xs",
+                  isProUser ? "text-emerald-700" : "text-zinc-500"
+                )}
+              >
+                {isProUser
+                  ? "You have full access to all features."
+                  : "Subscribe to Pro to unlock the full app."}
+              </p>
+            </div>
+          </div>
+
+          {subscriptionEndDate && (
+            <p className="mt-3 inline-block rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-xs text-amber-700">
+              Your plan will end on{" "}
+              <span className="font-semibold">{subscriptionEndDate}</span>.
+            </p>
+          )}
+
+          <div className="mt-4 flex items-center gap-3">
+            <button
+              type="button"
+              className={cn(
+                "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-default",
+                isProUser
+                  ? "bg-white text-zinc-800 hover:bg-zinc-100 shadow-sm"
+                  : "bg-zinc-900 text-white hover:bg-zinc-800"
+              )}
+              onClick={handleRedirectToStripe}
+              disabled={isRedirecting}
+            >
+              {isRedirecting ? (
+                <LucideLoader2 className="size-4 animate-spin" />
+              ) : !isProUser ? (
+                <LucideSparkles className="size-4" />
+              ) : null}
+              {isProUser ? "Manage plan" : "Subscribe to Pro"}
+            </button>
+            {!isProUser && (
+              <span className="text-sm text-zinc-500">
+                <span className="text-lg font-semibold tracking-tight text-zinc-800">
+                  $4
+                </span>
+                <span className="text-xs">/month</span>
+                <span className="mx-1.5 text-zinc-300">&middot;</span>
+                <span className="text-xs">cancel anytime</span>
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </SettingsLayout>
