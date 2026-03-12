@@ -40,7 +40,7 @@ export const WebSearchSources = ({ parts }: WebSearchSourcesProps) => {
 
   // Single hover state shared across all items
   const [activeKey, setActiveKey] = useState<string | null>(null);
-  const closeTimeout = useRef<ReturnType<typeof setTimeout>>();
+  const closeTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const onEnter = useCallback((key: string) => {
     clearTimeout(closeTimeout.current);
