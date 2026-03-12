@@ -35,7 +35,7 @@ export const MessageRow = ({
   const isStreaming = message.status === "streaming";
   const isReasoningInProgress = !!visibleReasoningText && !message.text;
   const hasWebSearch = message.parts.some((p) => p.type === "tool-webSearch");
-  const isWebSearching = hasWebSearch && !visibleText;
+  const isWebSearching = true;
   const showLoadingDots =
     isStreaming && !visibleText && !isReasoningInProgress && !isWebSearching;
 
