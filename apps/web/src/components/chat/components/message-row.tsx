@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import { cn } from "src/lib/utils";
 import { markdownComponents } from "../markdown-components";
 import type { ChatMessage } from "../types";
+import { WebSearchIndicator } from "./web-search-indicator";
 import { WebSearchSources } from "./web-search-part";
 
 type MessageRowProps = {
@@ -33,7 +34,10 @@ export const MessageRow = ({
 
   const isStreaming = message.status === "streaming";
   const isReasoningInProgress = !!visibleReasoningText && !message.text;
-  const showLoadingDots = isStreaming && !visibleText && !isReasoningInProgress;
+  const hasWebSearch = message.parts.some((p) => p.type === "tool-webSearch");
+  const isWebSearching = hasWebSearch && !visibleText;
+  const showLoadingDots =
+    isStreaming && !visibleText && !isReasoningInProgress && !isWebSearching;
 
   const handleCopyMessage = useCallback(async () => {
     await navigator.clipboard.writeText(message.text);
@@ -70,12 +74,14 @@ export const MessageRow = ({
         {reasoning?.text && (
           <ReasoningBlock
             text={visibleReasoningText}
-            isStreaming={isStreaming}
-            isActivelyReasoning={isReasoningInProgress}
+            isStreaming={isWebSearching ? false : isStreaming}
+            isActivelyReasoning={isWebSearching ? false : isReasoningInProgress}
             isOpen={reasoningOpen}
             onToggle={() => setReasoningOpen((v) => !v)}
           />
         )}
+
+        {isWebSearching && <WebSearchIndicator />}
 
         <div className="space-y-2">
           <ReactMarkdown
@@ -100,36 +106,35 @@ export const MessageRow = ({
         )}
 
         {(() => {
-          const hasWebSources = message.parts.some(
-            (p) => p.type === "tool-webSearch"
-          );
-          const hasModel = !!message.modelCode;
-          const hasFooterContent = hasWebSources || hasModel;
-          if (!hasFooterContent) return null;
+          const showSources = hasWebSearch && !!visibleText;
+          const showMeta = !isStreaming && !!message.modelCode;
+          if (!showSources && !showMeta) return null;
 
           return (
             <div className="mt-3 flex items-center gap-2 justify-between">
-              <div className="flex items-center gap-2 opacity-0 group-hover/message:opacity-100 transition-opacity duration-200">
-                {hasModel && (
+              {showMeta ? (
+                <div className="flex items-center gap-2 opacity-0 group-hover/message:opacity-100 transition-opacity duration-200">
                   <span className="text-[11px] text-zinc-400 select-none">
                     {message.reasoningEffort && message.reasoningEffort !== "off"
                       ? `${message.modelCode} (${message.reasoningEffort})`
                       : message.modelCode}
                   </span>
-                )}
-                <button
-                  type="button"
-                  onClick={() => handleCopyMessage()}
-                  className="rounded-md p-1 text-zinc-400 hover:text-zinc-600 transition-colors cursor-pointer"
-                >
-                  {copied ? (
-                    <Check className="size-3.5 text-emerald-500" />
-                  ) : (
-                    <Copy className="size-3.5" />
-                  )}
-                </button>
-              </div>
-              {hasWebSources && <WebSearchSources parts={message.parts} />}
+                  <button
+                    type="button"
+                    onClick={() => handleCopyMessage()}
+                    className="rounded-md p-1 text-zinc-400 hover:text-zinc-600 transition-colors cursor-pointer"
+                  >
+                    {copied ? (
+                      <Check className="size-3.5 text-emerald-500" />
+                    ) : (
+                      <Copy className="size-3.5" />
+                    )}
+                  </button>
+                </div>
+              ) : (
+                <div />
+              )}
+              {showSources && <WebSearchSources parts={message.parts} />}
             </div>
           );
         })()}

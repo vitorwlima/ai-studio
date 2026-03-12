@@ -20,7 +20,6 @@ const POPOVER_CONTENT_CLASS =
 
 export const WebSearchSources = ({ parts }: WebSearchSourcesProps) => {
   const webParts = parts.filter((p) => p.type === "tool-webSearch");
-  const isAnyLoading = webParts.some((p) => p.state !== "output-available");
 
   const allResults = useMemo(() => {
     const seen = new Set<string>();
@@ -53,15 +52,6 @@ export const WebSearchSources = ({ parts }: WebSearchSourcesProps) => {
       CLOSE_DELAY,
     );
   }, []);
-
-  if (isAnyLoading) {
-    return (
-      <div className="flex items-center gap-2 text-xs text-zinc-500 py-1.5 mt-2">
-        <span className="inline-block w-3 h-3 border-2 border-zinc-300 border-t-zinc-500 rounded-full animate-spin" />
-        Searching the web...
-      </div>
-    );
-  }
 
   if (!allResults.length) return null;
 
