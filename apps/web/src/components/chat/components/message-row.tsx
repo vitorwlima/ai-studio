@@ -31,6 +31,8 @@ export const MessageRow = ({
   const [reasoningOpen, setReasoningOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  const hasStartedResponding = !!visibleReasoningText || !!visibleText;
+
   const handleCopyMessage = useCallback(async () => {
     await navigator.clipboard.writeText(message.text);
     setCopied(true);
@@ -79,8 +81,12 @@ export const MessageRow = ({
           >
             {visibleText}
           </ReactMarkdown>
-          {message.status === "streaming" && (
-            <span className="inline-block w-1.5 h-4 bg-zinc-400 rounded-sm animate-pulse" />
+          {message.status === "streaming" && !hasStartedResponding && (
+            <span className="inline-flex items-center gap-1 h-5">
+              <span className="size-1.5 rounded-full bg-zinc-400 animate-[bounce_1.4s_ease-in-out_infinite]" />
+              <span className="size-1.5 rounded-full bg-zinc-400 animate-[bounce_1.4s_ease-in-out_0.2s_infinite]" />
+              <span className="size-1.5 rounded-full bg-zinc-400 animate-[bounce_1.4s_ease-in-out_0.4s_infinite]" />
+            </span>
           )}
         </div>
 
