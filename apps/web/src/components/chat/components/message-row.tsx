@@ -1,8 +1,9 @@
 import { useSmoothText } from "@convex-dev/agent/react";
-import { Check, ChevronRight, Copy } from "lucide-react";
-import { useCallback, useState, type RefObject } from "react";
+import { BrainCircuit, Check, ChevronRight, Copy } from "lucide-react";
+import { useCallback, useRef, useState, type RefObject } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { cn } from "src/lib/utils";
 import { markdownComponents } from "../markdown-components";
 import type { ChatMessage } from "../types";
 import { WebSearchSources } from "./web-search-part";
@@ -63,30 +64,12 @@ export const MessageRow = ({
     >
       <div className="min-w-0 text-sm leading-relaxed text-zinc-800">
         {reasoning?.text && (
-          <div className="mb-3">
-            <button
-              type="button"
-              onClick={() => setReasoningOpen((v) => !v)}
-              className="flex items-center gap-1 rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-xs text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700 transition-all cursor-pointer"
-            >
-              <ChevronRight
-                className={`size-3 transition-transform duration-200 ${
-                  reasoningOpen ? "rotate-90" : ""
-                }`}
-              />
-              Reasoning
-            </button>
-            {reasoningOpen && (
-              <div className="mt-2 border-l-2 border-zinc-300 pl-4 py-2 text-xs text-zinc-500 space-y-2">
-                <ReactMarkdown
-                  components={markdownComponents}
-                  remarkPlugins={[remarkGfm]}
-                >
-                  {visibleReasoningText}
-                </ReactMarkdown>
-              </div>
-            )}
-          </div>
+          <ReasoningBlock
+            text={visibleReasoningText}
+            isStreaming={message.status === "streaming"}
+            isOpen={reasoningOpen}
+            onToggle={() => setReasoningOpen((v) => !v)}
+          />
         )}
 
         <div className="space-y-2">
@@ -120,7 +103,7 @@ export const MessageRow = ({
               <div className="flex items-center gap-2 opacity-0 group-hover/message:opacity-100 transition-opacity duration-200">
                 {hasModel && (
                   <span className="text-[11px] text-zinc-400 select-none">
-                    {message.reasoningEffort
+                    {message.reasoningEffort && message.reasoningEffort !== "off"
                       ? `${message.modelCode} (${message.reasoningEffort})`
                       : message.modelCode}
                   </span>
@@ -141,6 +124,76 @@ export const MessageRow = ({
             </div>
           );
         })()}
+      </div>
+    </div>
+  );
+};
+
+const ReasoningBlock = ({
+  text,
+  isStreaming,
+  isOpen,
+  onToggle,
+}: {
+  text: string;
+  isStreaming: boolean;
+  isOpen: boolean;
+  onToggle: () => void;
+}) => {
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const isThinking = isStreaming && !text;
+
+  return (
+    <div className="mb-4">
+      <button
+        type="button"
+        onClick={onToggle}
+        className={cn(
+          "group/reasoning flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs transition-all duration-200 cursor-pointer",
+          "border border-zinc-200/80 hover:border-zinc-300",
+          isOpen
+            ? "bg-zinc-100 text-zinc-700"
+            : "bg-zinc-50 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-600"
+        )}
+      >
+        <BrainCircuit
+          className={cn(
+            "size-3.5 shrink-0 transition-colors",
+            isThinking && "animate-pulse text-violet-400",
+            isOpen ? "text-violet-500" : "text-zinc-400 group-hover/reasoning:text-violet-400"
+          )}
+        />
+        <span className="font-medium">
+          {isThinking ? "Thinking..." : "Reasoning"}
+        </span>
+        <ChevronRight
+          className={cn(
+            "size-3 ml-0.5 transition-transform duration-200",
+            isOpen && "rotate-90"
+          )}
+        />
+      </button>
+
+      <div
+        className={cn(
+          "grid transition-all duration-250 ease-out",
+          isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+        )}
+      >
+        <div className="overflow-hidden">
+          <div
+            ref={contentRef}
+            className="mt-2 ml-1 rounded-lg border border-zinc-200/60 bg-gradient-to-b from-zinc-50/80 to-white px-4 py-3 text-xs leading-relaxed text-zinc-500 space-y-2"
+          >
+            <ReactMarkdown
+              components={markdownComponents}
+              remarkPlugins={[remarkGfm]}
+            >
+              {text}
+            </ReactMarkdown>
+          </div>
+        </div>
       </div>
     </div>
   );

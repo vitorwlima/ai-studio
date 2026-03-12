@@ -80,3 +80,7 @@
 body {
   @apply bg-zinc-200 text-zinc-900;
 }
+
+.duration-250 {
+  transition-duration: 250ms;
+}

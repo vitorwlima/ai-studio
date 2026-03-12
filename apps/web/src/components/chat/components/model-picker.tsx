@@ -147,7 +147,7 @@ export const ModelPicker = ({
         <Popover.Trigger asChild>
           <button
             type="button"
-            className="max-w-72 flex items-center gap-1.5 rounded-lg px-1 py-1.5 text-xs text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors cursor-pointer"
+            className="max-w-72 flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs text-zinc-200 hover:bg-zinc-800 transition-colors cursor-pointer"
           >
             <span className="truncate">{label}</span>
             <LucideChevronDown className="size-3 shrink-0 text-zinc-500" />
