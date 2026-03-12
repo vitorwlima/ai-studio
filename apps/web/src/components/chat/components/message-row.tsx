@@ -31,7 +31,9 @@ export const MessageRow = ({
   const [reasoningOpen, setReasoningOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const hasStartedResponding = !!visibleReasoningText || !!visibleText;
+  const isStreaming = message.status === "streaming";
+  const isReasoningInProgress = !!visibleReasoningText && !message.text;
+  const showLoadingDots = isStreaming && !visibleText && !isReasoningInProgress;
 
   const handleCopyMessage = useCallback(async () => {
     await navigator.clipboard.writeText(message.text);
@@ -68,7 +70,8 @@ export const MessageRow = ({
         {reasoning?.text && (
           <ReasoningBlock
             text={visibleReasoningText}
-            isStreaming={message.status === "streaming"}
+            isStreaming={isStreaming}
+            isActivelyReasoning={isReasoningInProgress}
             isOpen={reasoningOpen}
             onToggle={() => setReasoningOpen((v) => !v)}
           />
@@ -81,7 +84,7 @@ export const MessageRow = ({
           >
             {visibleText}
           </ReactMarkdown>
-          {message.status === "streaming" && !hasStartedResponding && (
+          {showLoadingDots && (
             <span className="inline-flex items-center gap-1 h-5">
               <span className="size-1.5 rounded-full bg-zinc-400 animate-[bounce_1.4s_ease-in-out_infinite]" />
               <span className="size-1.5 rounded-full bg-zinc-400 animate-[bounce_1.4s_ease-in-out_0.2s_infinite]" />
@@ -138,11 +141,13 @@ export const MessageRow = ({
 const ReasoningBlock = ({
   text,
   isStreaming,
+  isActivelyReasoning,
   isOpen,
   onToggle,
 }: {
   text: string;
   isStreaming: boolean;
+  isActivelyReasoning: boolean;
   isOpen: boolean;
   onToggle: () => void;
 }) => {
@@ -173,6 +178,13 @@ const ReasoningBlock = ({
         <span className="font-medium">
           {isThinking ? "Thinking..." : "Reasoning"}
         </span>
+        {isActivelyReasoning && (
+          <span className="inline-flex items-center gap-0.5 ml-0.5">
+            <span className="size-1 rounded-full bg-violet-400 animate-[bounce_1.4s_ease-in-out_infinite]" />
+            <span className="size-1 rounded-full bg-violet-400 animate-[bounce_1.4s_ease-in-out_0.2s_infinite]" />
+            <span className="size-1 rounded-full bg-violet-400 animate-[bounce_1.4s_ease-in-out_0.4s_infinite]" />
+          </span>
+        )}
         <ChevronRight
           className={cn(
             "size-3 ml-0.5 transition-transform duration-200",
