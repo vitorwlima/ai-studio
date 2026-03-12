@@ -48,9 +48,9 @@ AI Studio is an open-source AI chat that allows you to chat with all available L
 ## Extra features
 - [x] sidebar mobile responsive (and another UX/UI overhaul, for reals now) 24/02/2026
 - [x] better pay wall (let user see whole website, just cant send message) 24/02/2026
-- [ ] better ux for when sending first chat message
-- [ ] better ui for reasoning box
-- [ ] browser search tool (most necessary IMO)
+- [x] better ux for when sending first chat message
+- [x] better ui for reasoning box
+- [x] browser search tool (most necessary IMO)
 - [ ] file uploads
 - [ ] add a button or something to "add SOTA models" that auto-adds latest gpt, claude, etc. (maybe a button to add main open weight models too)
 - [ ] image generation
