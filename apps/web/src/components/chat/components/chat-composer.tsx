@@ -62,6 +62,30 @@ export const ChatComposer = ({
   }, []);
 
   useEffect(() => {
+    textareaRef.current?.focus();
+  }, [threadId]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const textarea = textareaRef.current;
+      if (!textarea || textarea.disabled) return;
+      if (document.activeElement === textarea) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key.length !== 1) return;
+
+      // Don't steal focus from other inputs/textareas
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      if ((e.target as HTMLElement)?.isContentEditable) return;
+
+      textarea.focus();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  useEffect(() => {
     initializedReasoningRef.current = false;
   }, [threadId]);
 
