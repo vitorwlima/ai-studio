@@ -81,6 +81,10 @@ body {
   @apply bg-zinc-200 text-zinc-900;
 }
 
+::selection {
+  background-color: oklch(0.765 0.177 163 / 0.4);
+}
+
 .duration-250 {
   transition-duration: 250ms;
 }
