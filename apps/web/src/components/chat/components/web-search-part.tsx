@@ -69,28 +69,25 @@ export const WebSearchSources = ({ parts }: WebSearchSourcesProps) => {
   const overflowCount = allResults.length - MAX_VISIBLE;
 
   return (
-    <div className="flex items-center gap-2 mt-3">
-      <div className="flex items-center -space-x-1">
-        {visible.map((result) => (
-          <SourceFavicon
-            key={result.url}
-            result={result}
-            isOpen={activeKey === result.url}
-            onEnter={() => onEnter(result.url)}
-            onLeave={onLeave}
-          />
-        ))}
-        {overflowCount > 0 && (
-          <OverflowBubble
-            count={overflowCount}
-            results={allResults.slice(MAX_VISIBLE)}
-            isOpen={activeKey === "__overflow"}
-            onEnter={() => onEnter("__overflow")}
-            onLeave={onLeave}
-          />
-        )}
-      </div>
-      <span className="text-[11px] text-zinc-400">Sources</span>
+    <div className="flex items-center gap-0.5 rounded-full bg-zinc-100 border border-zinc-200/60 px-1.5 py-1">
+      {visible.map((result) => (
+        <SourceFavicon
+          key={result.url}
+          result={result}
+          isOpen={activeKey === result.url}
+          onEnter={() => onEnter(result.url)}
+          onLeave={onLeave}
+        />
+      ))}
+      {overflowCount > 0 && (
+        <OverflowBubble
+          count={overflowCount}
+          results={allResults.slice(MAX_VISIBLE)}
+          isOpen={activeKey === "__overflow"}
+          onEnter={() => onEnter("__overflow")}
+          onLeave={onLeave}
+        />
+      )}
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { useSmoothText } from "@convex-dev/agent/react";
-import { useState, type RefObject } from "react";
+import { Check, ChevronRight, Copy } from "lucide-react";
+import { useCallback, useState, type RefObject } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { markdownComponents } from "../markdown-components";
@@ -27,6 +28,13 @@ export const MessageRow = ({
     startStreaming: message.status === "streaming",
   });
   const [reasoningOpen, setReasoningOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyMessage = useCallback(async () => {
+    await navigator.clipboard.writeText(message.text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [message.text]);
 
   if (isUser) {
     return (
@@ -51,7 +59,7 @@ export const MessageRow = ({
   return (
     <div
       ref={isLastUserMessage ? lastUserMessageRef : null}
-      className="flex justify-start"
+      className="group/message flex justify-start"
     >
       <div className="min-w-0 text-sm leading-relaxed text-zinc-800">
         {reasoning?.text && (
@@ -59,12 +67,17 @@ export const MessageRow = ({
             <button
               type="button"
               onClick={() => setReasoningOpen((v) => !v)}
-              className="text-xs text-zinc-500 hover:text-zinc-700 cursor-pointer transition-colors font-medium"
+              className="flex items-center gap-1 rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-xs text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700 transition-all cursor-pointer"
             >
-              {reasoningOpen ? "Hide reasoning" : "View reasoning"}
+              <ChevronRight
+                className={`size-3 transition-transform duration-200 ${
+                  reasoningOpen ? "rotate-90" : ""
+                }`}
+              />
+              Reasoning
             </button>
             {reasoningOpen && (
-              <div className="mt-2 rounded-lg bg-zinc-50 p-3 text-xs text-zinc-500 space-y-2">
+              <div className="mt-2 border-l-2 border-zinc-300 pl-4 py-2 text-xs text-zinc-500 space-y-2">
                 <ReactMarkdown
                   components={markdownComponents}
                   remarkPlugins={[remarkGfm]}
@@ -88,21 +101,46 @@ export const MessageRow = ({
           )}
         </div>
 
-        <WebSearchSources parts={message.parts} />
-
         {(message.error || message.status === "failed") && (
-          <p className="mt-2 whitespace-pre-wrap break-words rounded-md border border-red-200 bg-red-50 px-2 py-1 text-xs text-red-700">
+          <p className="mt-2 whitespace-pre-wrap rounded-md border border-red-200 bg-red-50 px-2 py-1 text-xs text-red-700">
             {message.error ?? "The model request failed."}
           </p>
         )}
 
-        {message.modelCode && (
-          <p className="mt-2 text-[11px] text-zinc-400">
-            {message.reasoningEffort
-              ? `${message.modelCode} (${message.reasoningEffort})`
-              : message.modelCode}
-          </p>
-        )}
+        {(() => {
+          const hasWebSources = message.parts.some(
+            (p) => p.type === "tool-webSearch"
+          );
+          const hasModel = !!message.modelCode;
+          const hasFooterContent = hasWebSources || hasModel;
+          if (!hasFooterContent) return null;
+
+          return (
+            <div className="mt-3 flex items-center gap-2 justify-between">
+              <div className="flex items-center gap-2 opacity-0 group-hover/message:opacity-100 transition-opacity duration-200">
+                {hasModel && (
+                  <span className="text-[11px] text-zinc-400 select-none">
+                    {message.reasoningEffort
+                      ? `${message.modelCode} (${message.reasoningEffort})`
+                      : message.modelCode}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => void handleCopyMessage()}
+                  className="rounded-md p-1 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors cursor-pointer"
+                >
+                  {copied ? (
+                    <Check className="size-3.5 text-emerald-500" />
+                  ) : (
+                    <Copy className="size-3.5" />
+                  )}
+                </button>
+              </div>
+              {hasWebSources && <WebSearchSources parts={message.parts} />}
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
