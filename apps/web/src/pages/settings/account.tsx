@@ -5,7 +5,7 @@ export const AccountSettings = () => {
   return (
     <SettingsLayout>
       <div className="flex justify-center">
-        <UserProfile routing="path" path="/settings/account" />
+        <UserProfile />
       </div>
     </SettingsLayout>
   );
