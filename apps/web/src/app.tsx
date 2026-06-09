@@ -6,6 +6,8 @@ import { SignUp } from "./pages/auth/sign-up";
 import { AccountSettings } from "./pages/settings/account";
 import { ApiKeySettings } from "./pages/settings/api-key";
 import { ContactSettings } from "./pages/settings/contact";
+import { McpOAuthCallback } from "./pages/settings/mcp-callback";
+import { McpServersSettings } from "./pages/settings/mcp-servers";
 import { SubscriptionSettings } from "./pages/settings/subscription";
 import "./styles.css";
 
@@ -24,6 +26,11 @@ export const App = () => {
           />
           <Route path="/settings/account/*" element={<AccountSettings />} />
           <Route path="/settings/api-key" element={<ApiKeySettings />} />
+          <Route path="/settings/mcp" element={<McpServersSettings />} />
+          <Route
+            path="/settings/mcp/callback"
+            element={<McpOAuthCallback />}
+          />
           <Route
             path="/settings/subscription"
             element={<SubscriptionSettings />}

@@ -11,9 +11,13 @@
 import type * as http from "../http.js";
 import type * as lib_agent from "../lib/agent.js";
 import type * as lib_crypto from "../lib/crypto.js";
+import type * as lib_mcp from "../lib/mcp.js";
+import type * as lib_mcpOAuth from "../lib/mcpOAuth.js";
 import type * as lib_openrouter from "../lib/openrouter.js";
+import type * as lib_polyfills from "../lib/polyfills.js";
 import type * as lib_reasoning from "../lib/reasoning.js";
 import type * as lib_tools from "../lib/tools.js";
+import type * as mcp from "../mcp.js";
 import type * as messages from "../messages.js";
 import type * as models from "../models.js";
 import type * as settings from "../settings.js";
@@ -30,9 +34,13 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   "lib/agent": typeof lib_agent;
   "lib/crypto": typeof lib_crypto;
+  "lib/mcp": typeof lib_mcp;
+  "lib/mcpOAuth": typeof lib_mcpOAuth;
   "lib/openrouter": typeof lib_openrouter;
+  "lib/polyfills": typeof lib_polyfills;
   "lib/reasoning": typeof lib_reasoning;
   "lib/tools": typeof lib_tools;
+  mcp: typeof mcp;
   messages: typeof messages;
   models: typeof models;
   settings: typeof settings;

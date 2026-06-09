@@ -12,6 +12,7 @@ import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { components } from "./_generated/api";
 import { buildUserAgent } from "./lib/agent";
+import { loadMcpTools } from "./lib/mcp";
 import { generateText } from "ai";
 import { aiStudioOpenRouter, createUserOpenRouter } from "./lib/openrouter";
 import { decrypt } from "./lib/crypto";
@@ -119,18 +120,24 @@ export const generateResponse = internalAction({
       reasoning,
     });
 
-    const agent = buildUserAgent(model);
+    const { tools: mcpTools, closeAll } = await loadMcpTools(ctx, userId);
+    const agent = buildUserAgent(model, mcpTools);
 
-    const result = await agent.streamText(
-      ctx,
-      { threadId, userId },
-      { promptMessageId },
-      {
-        saveStreamDeltas: true,
-      }
-    );
+    try {
+      const result = await agent.streamText(
+        ctx,
+        { threadId, userId },
+        { promptMessageId },
+        {
+          saveStreamDeltas: true,
+        }
+      );
 
-    await result.consumeStream();
+      await result.consumeStream();
+    } finally {
+      // MCP clients must stay open for the whole stream (tools run mid-stream).
+      await closeAll();
+    }
 
     await ctx.runMutation(internal.messages.touchThread, {
       threadId,

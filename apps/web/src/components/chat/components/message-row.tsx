@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import { cn } from "src/lib/utils";
 import { markdownComponents } from "../markdown-components";
 import type { ChatMessage } from "../types";
+import { ToolCallBlock } from "./tool-call-part";
 import { WebSearchIndicator } from "./web-search-indicator";
 import { WebSearchSources } from "./web-search-part";
 
@@ -36,8 +37,18 @@ export const MessageRow = ({
   const isReasoningInProgress = !!visibleReasoningText && !message.text;
   const hasWebSearch = message.parts.some((p) => p.type === "tool-webSearch");
   const isWebSearching = hasWebSearch && !visibleText;;
+  const toolParts = message.parts.filter(
+    (p) => p.type.startsWith("tool-") && p.type !== "tool-webSearch"
+  );
+  const isToolRunning = toolParts.some(
+    (p) => p.state !== "output-available" && p.state !== "output-error"
+  );
   const showLoadingDots =
-    isStreaming && !visibleText && !isReasoningInProgress && !isWebSearching;
+    isStreaming &&
+    !visibleText &&
+    !isReasoningInProgress &&
+    !isWebSearching &&
+    !isToolRunning;
 
   const handleCopyMessage = useCallback(async () => {
     await navigator.clipboard.writeText(message.text);
@@ -82,6 +93,10 @@ export const MessageRow = ({
         )}
 
         {isWebSearching && <WebSearchIndicator />}
+
+        {toolParts.map((part, i) => (
+          <ToolCallBlock key={part.toolCallId ?? `${part.type}-${i}`} part={part} />
+        ))}
 
         <div className="space-y-2">
           <ReactMarkdown

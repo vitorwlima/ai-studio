@@ -30,6 +30,37 @@ const schema = defineSchema({
   })
     .index("by_userId", ["userId"])
     .index("by_userId_modelCode", ["userId", "modelCode"]),
+
+  mcpServers: defineTable({
+    userId: v.string(),
+    name: v.string(),
+    url: v.string(),
+    transport: v.union(v.literal("http"), v.literal("sse")),
+    authType: v.union(
+      v.literal("none"),
+      v.literal("bearer"),
+      v.literal("oauth")
+    ),
+    enabled: v.boolean(),
+
+    // bearer auth
+    encryptedToken: v.optional(v.string()),
+    maskedToken: v.optional(v.string()),
+
+    // oauth state (persisted across the redirect flow + for refresh)
+    oauthScope: v.optional(v.string()),
+    oauthRedirectUri: v.optional(v.string()),
+    oauthClientInfo: v.optional(v.string()), // JSON OAuthClientInformation
+    oauthCodeVerifier: v.optional(v.string()),
+    oauthEncryptedTokens: v.optional(v.string()),
+    oauthState: v.optional(v.string()), // CSRF state, correlates the callback
+    oauthConnected: v.optional(v.boolean()),
+
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_oauthState", ["oauthState"]),
 });
 
 export default schema;

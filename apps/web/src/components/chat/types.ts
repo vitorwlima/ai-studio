@@ -20,6 +20,7 @@ export type ChatMessage = {
     state?: string;
     input?: Record<string, unknown>;
     output?: Record<string, unknown>;
+    errorText?: string;
     text?: string;
   }>;
   modelCode?: string;

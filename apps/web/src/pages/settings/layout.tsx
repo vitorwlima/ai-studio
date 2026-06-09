@@ -5,6 +5,7 @@ import {
   LucideKey,
   LucideLogOut,
   LucideMail,
+  LucidePlug,
   LucideUserRound,
 } from "lucide-react";
 import type { ReactNode } from "react";
@@ -21,6 +22,11 @@ const navItems = [
     href: "/settings/api-key",
     label: "API Key",
     icon: LucideKey,
+  },
+  {
+    href: "/settings/mcp",
+    label: "MCP Servers",
+    icon: LucidePlug,
   },
   {
     href: "/settings/subscription",
